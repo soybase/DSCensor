@@ -1,0 +1,326 @@
+#organism_id	genus	species	common_name	num_features	cvterm_id	feature_type	origin
+13	Arachis	hypogaea	peanut	114	238	linkage_group	PB
+13	Arachis	hypogaea	peanut	63	1104	QTL	PB
+13	Arachis	hypogaea	peanut	956	1745	genetic_marker	PB
+14	Arachis	duranensis	Arachis duranensis	37302	261	mRNA	PB
+14	Arachis	duranensis	Arachis duranensis	37302	335	gene	PB
+14	Arachis	duranensis	Arachis duranensis	37302	370	polypeptide	PB
+14	Arachis	duranensis	Arachis duranensis	215306	431	exon	PB
+14	Arachis	duranensis	Arachis duranensis	1690	433	supercontig	PB
+14	Arachis	duranensis	Arachis duranensis	10	662	chromosome	PB
+15	Arachis	ipaensis	Arachis ipaensis	42533	261	mRNA	PB
+15	Arachis	ipaensis	Arachis ipaensis	42533	335	gene	PB
+15	Arachis	ipaensis	Arachis ipaensis	42533	370	polypeptide	PB
+15	Arachis	ipaensis	Arachis ipaensis	238780	431	exon	PB
+15	Arachis	ipaensis	Arachis ipaensis	1183	433	supercontig	PB
+15	Arachis	ipaensis	Arachis ipaensis	10	662	chromosome	PB
+25	Arachis	spp.	multiple peanut species	64	238	linkage_group	PB
+25	Arachis	spp.	multiple peanut species	128	1104	QTL	PB
+25	Arachis	spp.	multiple peanut species	1925	1745	genetic_marker	PB
+6	Arabidopsis	thaliana	mouse-ear cress	27416	43111	polypeptide	LIS
+9	Oryza	sativa	rice	39049	43111	polypeptide	LIS
+14	Cajanus	cajan	pigeonpea	48680	43002	mRNA	LIS
+14	Cajanus	cajan	pigeonpea	48680	43076	gene	LIS
+14	Cajanus	cajan	pigeonpea	48680	43111	polypeptide	LIS
+14	Cajanus	cajan	pigeonpea	174650	43172	exon	LIS
+14	Cajanus	cajan	pigeonpea	137531	43174	supercontig	LIS
+14	Cajanus	cajan	pigeonpea	11	43403	chromosome	LIS
+14	Cajanus	cajan	pigeonpea	163479	43412	protein_match	LIS
+14	Cajanus	cajan	pigeonpea	118330	44794	protein_hmm_match	LIS
+14	Cajanus	cajan	pigeonpea	3321	44899	syntenic_region	LIS
+15	Cicer	arietinum	chickpea	28269	43002	mRNA	LIS
+15	Cicer	arietinum	chickpea	28269	43076	gene	LIS
+15	Cicer	arietinum	chickpea	28269	43111	polypeptide	LIS
+15	Cicer	arietinum	chickpea	139417	43172	exon	LIS
+15	Cicer	arietinum	chickpea	7127	43174	supercontig	LIS
+15	Cicer	arietinum	chickpea	8	43403	chromosome	LIS
+15	Cicer	arietinum	chickpea	109969	43412	protein_match	LIS
+15	Cicer	arietinum	chickpea	83146	44794	protein_hmm_match	LIS
+16	Glycine	max	soybean	88647	43002	mRNA	LIS
+16	Glycine	max	soybean	56044	43076	gene	LIS
+16	Glycine	max	soybean	88647	43111	polypeptide	LIS
+16	Glycine	max	soybean	572504	43172	exon	LIS
+16	Glycine	max	soybean	1170	43174	supercontig	LIS
+16	Glycine	max	soybean	20	43403	chromosome	LIS
+16	Glycine	max	soybean	231013	43412	protein_match	LIS
+16	Glycine	max	soybean	176527	44794	protein_hmm_match	LIS
+16	Glycine	max	soybean	15922	44899	syntenic_region	LIS
+18	Lotus	japonicus	birdsfoot trefoil	93954	43002	mRNA	LIS
+18	Lotus	japonicus	birdsfoot trefoil	39735	43076	gene	LIS
+18	Lotus	japonicus	birdsfoot trefoil	48106	43111	polypeptide	LIS
+18	Lotus	japonicus	birdsfoot trefoil	303120	43172	exon	LIS
+18	Lotus	japonicus	birdsfoot trefoil	9	43403	chromosome	LIS
+18	Lotus	japonicus	birdsfoot trefoil	125532	43412	protein_match	LIS
+18	Lotus	japonicus	birdsfoot trefoil	93250	44794	protein_hmm_match	LIS
+18	Lotus	japonicus	birdsfoot trefoil	5206	44899	syntenic_region	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	33072	43002	mRNA	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	33072	43076	gene	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	33072	43111	polypeptide	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	182583	43172	exon	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	13554	43174	supercontig	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	20	43403	chromosome	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	151126	43412	protein_match	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	114724	44794	protein_hmm_match	LIS
+19	Lupinus	angustifolius	narrow-leafed lupin	10754	44899	syntenic_region	LIS
+21	Medicago	truncatula	barrel medic	62319	43002	mRNA	LIS
+21	Medicago	truncatula	barrel medic	50894	43076	gene	LIS
+21	Medicago	truncatula	barrel medic	62319	43111	polypeptide	LIS
+21	Medicago	truncatula	barrel medic	298601	43172	exon	LIS
+21	Medicago	truncatula	barrel medic	1941	43174	supercontig	LIS
+21	Medicago	truncatula	barrel medic	8	43403	chromosome	LIS
+21	Medicago	truncatula	barrel medic	164349	43412	protein_match	LIS
+21	Medicago	truncatula	barrel medic	127427	44794	protein_hmm_match	LIS
+21	Medicago	truncatula	barrel medic	9408	44899	syntenic_region	LIS
+24	Phaseolus	vulgaris	common bean	125	42980	linkage_group	LIS
+24	Phaseolus	vulgaris	common bean	31638	43002	mRNA	LIS
+24	Phaseolus	vulgaris	common bean	27197	43076	gene	LIS
+24	Phaseolus	vulgaris	common bean	31638	43111	polypeptide	LIS
+24	Phaseolus	vulgaris	common bean	4261	43117	primer	LIS
+24	Phaseolus	vulgaris	common bean	186435	43172	exon	LIS
+24	Phaseolus	vulgaris	common bean	697	43174	supercontig	LIS
+24	Phaseolus	vulgaris	common bean	11	43403	chromosome	LIS
+24	Phaseolus	vulgaris	common bean	99869	43412	protein_match	LIS
+24	Phaseolus	vulgaris	common bean	262	43845	QTL	LIS
+24	Phaseolus	vulgaris	common bean	16315	44486	genetic_marker	LIS
+24	Phaseolus	vulgaris	common bean	94040	44794	protein_hmm_match	LIS
+24	Phaseolus	vulgaris	common bean	8702	44899	syntenic_region	LIS
+26	Vigna	radiata	mungbean	23181	43002	mRNA	LIS
+26	Vigna	radiata	mungbean	22368	43076	gene	LIS
+26	Vigna	radiata	mungbean	23181	43111	polypeptide	LIS
+26	Vigna	radiata	mungbean	146802	43172	exon	LIS
+26	Vigna	radiata	mungbean	2486	43174	supercontig	LIS
+26	Vigna	radiata	mungbean	11	43403	chromosome	LIS
+26	Vigna	radiata	mungbean	97272	43412	protein_match	LIS
+26	Vigna	radiata	mungbean	76482	44794	protein_hmm_match	LIS
+26	Vigna	radiata	mungbean	3251	44899	syntenic_region	LIS
+30	Trifolium	pratense	Red clover	41302	43002	mRNA	LIS
+30	Trifolium	pratense	Red clover	40868	43076	gene	LIS
+30	Trifolium	pratense	Red clover	41302	43111	polypeptide	LIS
+30	Trifolium	pratense	Red clover	191293	43172	exon	LIS
+30	Trifolium	pratense	Red clover	39044	43174	supercontig	LIS
+30	Trifolium	pratense	Red clover	7	43403	chromosome	LIS
+30	Trifolium	pratense	Red clover	145121	43412	protein_match	LIS
+30	Trifolium	pratense	Red clover	107106	44794	protein_hmm_match	LIS
+30	Trifolium	pratense	Red clover	4511	44899	syntenic_region	LIS
+32	Vigna	angularis	adzuki bean	36689	43002	mRNA	LIS
+32	Vigna	angularis	adzuki bean	26857	43076	gene	LIS
+32	Vigna	angularis	adzuki bean	36689	43111	polypeptide	LIS
+32	Vigna	angularis	adzuki bean	160281	43172	exon	LIS
+32	Vigna	angularis	adzuki bean	3376	43174	supercontig	LIS
+32	Vigna	angularis	adzuki bean	11	43403	chromosome	LIS
+32	Vigna	angularis	adzuki bean	105671	43412	protein_match	LIS
+32	Vigna	angularis	adzuki bean	82454	44794	protein_hmm_match	LIS
+32	Vigna	angularis	adzuki bean	4569	44899	syntenic_region	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	30686	43002	mRNA	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	30257	43076	gene	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	30686	43111	polypeptide	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	155992	43172	exon	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	38505	43174	supercontig	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	8	43403	chromosome	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	117817	43412	protein_match	LIS
+33	Cicer	arietinum_ICC4958	chickpea desi	90271	44794	protein_hmm_match	LIS
+1556	Amborella	trichopoda	Amborella trichopoda	26846	43111	polypeptide	LIS
+1557	Prunus	persica	peach	27864	43111	polypeptide	LIS
+1558	Solanum	lycopersicum	tomato	34727	43111	polypeptide	LIS
+1559	Vitis	vinifera	wine grape	26346	43111	polypeptide	LIS
+1560	Zea	mays	maize	63480	43111	polypeptide	LIS
+1570	consensus	consensus	consensus	83705	43412	protein_match	LIS
+1570	consensus	consensus	consensus	8351	43491	polypeptide_domain	LIS
+1570	consensus	consensus	consensus	31466	44007	consensus_region	LIS
+1570	consensus	consensus	consensus	60379	44794	protein_hmm_match	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	37302	43002	mRNA	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	37302	43076	gene	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	37302	43111	polypeptide	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	215306	43172	exon	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	1690	43174	supercontig	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	10	43403	chromosome	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	100177	43412	protein_match	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	98744	44794	protein_hmm_match	LIS
+1571	Arachis	duranensis	Arachis duranensis / wild peanut	6784	44899	syntenic_region	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	42533	43002	mRNA	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	42533	43076	gene	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	42533	43111	polypeptide	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	238780	43172	exon	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	1183	43174	supercontig	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	10	43403	chromosome	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	109856	43412	protein_match	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	107997	44794	protein_hmm_match	LIS
+1572	Arachis	ipaensis	Arachis ipaensis / wild peanut	7086	44899	syntenic_region	LIS
+3428	Cicer	arietinum.CDCFrontier		3495	44899	syntenic_region	LIS
+3434	Cicer	arietinum.ICC4958		4284	44899	syntenic_region	LIS
+genome.A17_HM341.v3.5.1	Medicago	Truncatula	barrel medic	62374	0	gene	HAPMAP
+
+genome.A17_HM341.v3.5.1	Medicago	Truncatula	barrel medic	240874	0	exon	HAPMAP
+
+genome.A17_HM341.v3.5.1	Medicago	Truncatula	barrel medic	64138	0	mRNA	HAPMAP
+
+genome.A17_HM341.v3.5.1	Medicago	Truncatula	barrel medic	239164	0	CDS	HAPMAP
+
+genome.A17_HM341.v4.0	Medicago	Truncatula	barrel medic	38869	0	five_prime_UTR	HAPMAP
+
+genome.A17_HM341.v4.0	Medicago	Truncatula	barrel medic	298601	0	exon	HAPMAP
+
+genome.A17_HM341.v4.0	Medicago	Truncatula	barrel medic	62319	0	mRNA	HAPMAP
+
+genome.A17_HM341.v4.0	Medicago	Truncatula	barrel medic	284973	0	CDS	HAPMAP
+
+genome.A17_HM341.v4.0	Medicago	Truncatula	barrel medic	35951	0	three_prime_UTR	HAPMAP
+
+genome.A17_HM341.v4.0	Medicago	Truncatula	barrel medic	50894	0	gene	HAPMAP
+
+genome.HM004.v1.0	Medicago	Truncatula	barrel medic	64157	0	gene	HAPMAP
+
+genome.HM004.v1.0	Medicago	Truncatula	barrel medic	247255	0	exon	HAPMAP
+
+genome.HM004.v1.0	Medicago	Truncatula	barrel medic	64157	0	mRNA	HAPMAP
+
+genome.HM004.v1.0	Medicago	Truncatula	barrel medic	247255	0	CDS	HAPMAP
+
+genome.HM010.v1.0	Medicago	Truncatula	barrel medic	65155	0	gene	HAPMAP
+
+genome.HM010.v1.0	Medicago	Truncatula	barrel medic	250404	0	exon	HAPMAP
+
+genome.HM010.v1.0	Medicago	Truncatula	barrel medic	65155	0	mRNA	HAPMAP
+
+genome.HM010.v1.0	Medicago	Truncatula	barrel medic	250404	0	CDS	HAPMAP
+
+genome.HM022.v1.0	Medicago	Truncatula	barrel medic	59567	0	gene	HAPMAP
+
+genome.HM022.v1.0	Medicago	Truncatula	barrel medic	236514	0	exon	HAPMAP
+
+genome.HM022.v1.0	Medicago	Truncatula	barrel medic	59567	0	mRNA	HAPMAP
+
+genome.HM022.v1.0	Medicago	Truncatula	barrel medic	236514	0	CDS	HAPMAP
+
+genome.HM023.v1.0	Medicago	Truncatula	barrel medic	64116	0	gene	HAPMAP
+
+genome.HM023.v1.0	Medicago	Truncatula	barrel medic	246560	0	exon	HAPMAP
+
+genome.HM023.v1.0	Medicago	Truncatula	barrel medic	64116	0	mRNA	HAPMAP
+
+genome.HM023.v1.0	Medicago	Truncatula	barrel medic	246560	0	CDS	HAPMAP
+
+genome.HM034.v1.0	Medicago	Truncatula	barrel medic	64342	0	gene	HAPMAP
+
+genome.HM034.v1.0	Medicago	Truncatula	barrel medic	248717	0	exon	HAPMAP
+
+genome.HM034.v1.0	Medicago	Truncatula	barrel medic	64342	0	mRNA	HAPMAP
+
+genome.HM034.v1.0	Medicago	Truncatula	barrel medic	248717	0	CDS	HAPMAP
+
+genome.HM050.v1.0	Medicago	Truncatula	barrel medic	65471	0	gene	HAPMAP
+
+genome.HM050.v1.0	Medicago	Truncatula	barrel medic	251157	0	exon	HAPMAP
+
+genome.HM050.v1.0	Medicago	Truncatula	barrel medic	65471	0	mRNA	HAPMAP
+
+genome.HM050.v1.0	Medicago	Truncatula	barrel medic	251157	0	CDS	HAPMAP
+
+genome.HM056.v1	Medicago	Truncatula	barrel medic	65413	0	gene	HAPMAP
+
+genome.HM056.v1	Medicago	Truncatula	barrel medic	249731	0	exon	HAPMAP
+
+genome.HM056.v1	Medicago	Truncatula	barrel medic	65413	0	mRNA	HAPMAP
+
+genome.HM056.v1	Medicago	Truncatula	barrel medic	249731	0	CDS	HAPMAP
+
+genome.HM056.v2.0	Medicago	Truncatula	barrel medic	65413	0	gene	HAPMAP
+
+genome.HM056.v2.0	Medicago	Truncatula	barrel medic	249731	0	exon	HAPMAP
+
+genome.HM056.v2.0	Medicago	Truncatula	barrel medic	65413	0	mRNA	HAPMAP
+
+genome.HM056.v2.0	Medicago	Truncatula	barrel medic	249731	0	CDS	HAPMAP
+
+genome.HM058.v1.0	Medicago	Truncatula	barrel medic	63887	0	gene	HAPMAP
+
+genome.HM058.v1.0	Medicago	Truncatula	barrel medic	244280	0	exon	HAPMAP
+
+genome.HM058.v1.0	Medicago	Truncatula	barrel medic	63887	0	mRNA	HAPMAP
+
+genome.HM058.v1.0	Medicago	Truncatula	barrel medic	244280	0	CDS	HAPMAP
+
+genome.HM060.v1.0	Medicago	Truncatula	barrel medic	64405	0	gene	HAPMAP
+
+genome.HM060.v1.0	Medicago	Truncatula	barrel medic	248003	0	exon	HAPMAP
+
+genome.HM060.v1.0	Medicago	Truncatula	barrel medic	64405	0	mRNA	HAPMAP
+
+genome.HM060.v1.0	Medicago	Truncatula	barrel medic	248003	0	CDS	HAPMAP
+
+genome.HM095.v1.0	Medicago	Truncatula	barrel medic	65293	0	gene	HAPMAP
+
+genome.HM095.v1.0	Medicago	Truncatula	barrel medic	250214	0	exon	HAPMAP
+
+genome.HM095.v1.0	Medicago	Truncatula	barrel medic	65293	0	mRNA	HAPMAP
+
+genome.HM095.v1.0	Medicago	Truncatula	barrel medic	250214	0	CDS	HAPMAP
+
+genome.HM125.v1.0	Medicago	Truncatula	barrel medic	66976	0	gene	HAPMAP
+
+genome.HM125.v1.0	Medicago	Truncatula	barrel medic	252926	0	exon	HAPMAP
+
+genome.HM125.v1.0	Medicago	Truncatula	barrel medic	66976	0	mRNA	HAPMAP
+
+genome.HM125.v1.0	Medicago	Truncatula	barrel medic	252926	0	CDS	HAPMAP
+
+genome.HM129.v1.0	Medicago	Truncatula	barrel medic	65416	0	gene	HAPMAP
+
+genome.HM129.v1.0	Medicago	Truncatula	barrel medic	250890	0	exon	HAPMAP
+
+genome.HM129.v1.0	Medicago	Truncatula	barrel medic	65416	0	mRNA	HAPMAP
+
+genome.HM129.v1.0	Medicago	Truncatula	barrel medic	250890	0	CDS	HAPMAP
+
+genome.HM185.v1.0	Medicago	Truncatula	barrel medic	65712	0	gene	HAPMAP
+
+genome.HM185.v1.0	Medicago	Truncatula	barrel medic	250945	0	exon	HAPMAP
+
+genome.HM185.v1.0	Medicago	Truncatula	barrel medic	65712	0	mRNA	HAPMAP
+
+genome.HM185.v1.0	Medicago	Truncatula	barrel medic	250945	0	CDS	HAPMAP
+
+genome.HM324.v1.0	Medicago	Truncatula	barrel medic	60074	0	gene	HAPMAP
+
+genome.HM324.v1.0	Medicago	Truncatula	barrel medic	234629	0	exon	HAPMAP
+
+genome.HM324.v1.0	Medicago	Truncatula	barrel medic	60074	0	mRNA	HAPMAP
+
+genome.HM324.v1.0	Medicago	Truncatula	barrel medic	234629	0	CDS	HAPMAP
+
+genome.R108_HM340.v0.95	Medicago	Truncatula	barrel medic	62188	0	gene	HAPMAP
+
+genome.R108_HM340.v0.95	Medicago	Truncatula	barrel medic	245831	0	exon	HAPMAP
+
+genome.R108_HM340.v0.95	Medicago	Truncatula	barrel medic	62188	0	mRNA	HAPMAP
+
+genome.R108_HM340.v0.95	Medicago	Truncatula	barrel medic	245831	0	CDS	HAPMAP
+
+Glycine_max_v2.0	Glycine	max	soybean	6746	0	ncRNA	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	71355	0	mRNA	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	11	0	rRNA	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	560597	0	exon	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	434386	0	CDS	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	25	0	intron	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	58889	0	gene	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	549	0	primary_transcript	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	11	0	match	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	12760	0	cDNA_match	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	4248	0	transcript	NCBI
+Glycine_max_v2.0	Glycine	max	soybean	749	0	tRNA	NCBI
+MedtrA17_4.0	Medicago	Truncatula	barrel medic	57585	0	mRNA	NCBI
+MedtrA17_4.0	Medicago	Truncatula	barrel medic	4	0	rRNA	NCBI
+MedtrA17_4.0	Medicago	Truncatula	barrel medic	268528	0	exon	NCBI
+MedtrA17_4.0	Medicago	Truncatula	barrel medic	257880	0	CDS	NCBI
+MedtrA17_4.0	Medicago	Truncatula	barrel medic	51629	0	gene	NCBI
+MedtrA17_4.0	Medicago	Truncatula	barrel medic	1104	0	tRNA	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	37662	0	mRNA	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	11	0	rRNA	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	267021	0	exon	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	1583	0	lnc_RNA	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	228996	0	CDS	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	29534	0	gene	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	363	0	match	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	1469	0	cDNA_match	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	1124	0	transcript	NCBI
+Vigan1.1	Vigna	angularis	adzuki bean	610	0	tRNA	NCBI

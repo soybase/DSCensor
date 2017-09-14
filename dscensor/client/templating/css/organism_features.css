@@ -1,0 +1,17 @@
+    a {color: blue;}
+    a.toggle-vis.active {color :purple;}
+    a.toggle-vis.visited {color : blue;}
+    .select-info {
+        visibility : hidden;
+    }
+    #customHistogram-1 .x.axis text {
+        text-anchor: end !important;
+        font-weight: bold;
+        transform: rotate(-30deg);
+    }
+    .chart {
+        display: block;
+        margin: auto;
+        margin-top: 40px;
+        font-size: 14px;
+    }
