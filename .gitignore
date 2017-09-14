@@ -99,3 +99,11 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# ignore compressions
+*.tgz
+*.gz
+*.bz2
+
+# cstore
+cstore/
