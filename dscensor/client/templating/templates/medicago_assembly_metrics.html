@@ -187,6 +187,7 @@ $(document).ready(function(){
         .xUnits(dc.units.ordinal)
         .xAxisLabel("Assembly Identifier")
         .yAxisLabel("Scaffold N50")
+        .elasticY(true)
         .transitionDuration(10)
         .legend((dc.legend().x(120).y(0).itemHeight(16).gap(4)))
         .on('renderlet', function(chart){
@@ -246,6 +247,7 @@ $(document).ready(function(){
         .xUnits(dc.units.ordinal)
         .xAxisLabel("Assembly Identifier")
         .yAxisLabel("Assembly Bases")
+        .elasticY(true)
         .stack(gap_bases, "Bases in Gaps")
         .transitionDuration(10)
         .legend((dc.legend().x(120).y(0).itemHeight(16).gap(4)))
@@ -308,6 +310,7 @@ $(document).ready(function(){
         .xUnits(dc.units.ordinal)
         .xAxisLabel("Assembly Identifier")
         .yAxisLabel("Percentage")
+        .elasticY(true)
         .stack(busco_fragmented, "Fragmented BUSCOs")
         .stack(busco_missing, "Missing BUSCOs")
         .transitionDuration(10)
