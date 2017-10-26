@@ -1,1 +1,1 @@
-gunicorn -b 0.0.0.0:8889 --access-logfile - --error-logfile - --workers 2 --log-level=debug dscensor:app -kgevent
+gunicorn -b 0.0.0.0:8889 --access-logfile - --error-logfile - --workers 2 --log-level=debug dscensor:app -kgevent --reload
