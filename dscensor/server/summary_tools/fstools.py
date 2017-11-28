@@ -5,6 +5,7 @@ import sys, os
 import subprocess
 import errno
 import gzip
+import json
 #import bz2
 import zipfile
 
@@ -117,4 +118,8 @@ def return_filehandle(open_me):
                 return zipfile.open(open_me)
     return open(open_me)
 
+
+def return_json(read_me):
+    json_obj = json.loads(open(read_me).read())
+    return json_obj
 
