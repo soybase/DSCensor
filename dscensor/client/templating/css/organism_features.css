@@ -9,6 +9,17 @@
         font-weight: bold;
         transform: rotate(-30deg);
     }
+    #customScatter-1 .x.axis text {
+        text-anchor: end !important;
+        font-weight: bold;
+        transform: rotate(-30deg);
+    }
+    #customHistogram-1 .x.axis line {
+        display : none;
+    }
+    #test-composite .svg {
+        display : none;
+    }
     .chart {
         display: block;
         margin: auto;
