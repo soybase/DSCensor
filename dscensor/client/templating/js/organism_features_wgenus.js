@@ -687,7 +687,7 @@ function create_sunburst(){
         dc.renderAll();
     });
 
-    $('button.customfilters').on('click', function(e){
+    $('button.customhistogram1').on('click', function(e){
         var element = 'input.customhistogram-' + $(this).attr('id').split('-')[1];
         var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
         var chartI = dc.chartRegistry.list('histogramfeatures_group');
