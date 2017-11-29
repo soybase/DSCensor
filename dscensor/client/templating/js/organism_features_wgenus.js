@@ -2,6 +2,8 @@ var histogramSelection = {'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs
 var global_domain_filter = {};
 var features_filter = ['genes'];
 var sunburst_on = 1;
+var scatx = 'exons';
+var scaty = 'genes';
 $(document).ready(function(){
     var acount = 0;
     var name_length = 0;
@@ -17,6 +19,7 @@ $(document).ready(function(){
     var left_margin = name_length * 4 + 10;
     var bottom_margin = name_length * 4 + 10;
     var w = acount * 30 + left_margin + 60;
+    var scatw = 800;
     var organismFeaturesTable = $('#features-datatable').dataTable({
         "data": feature_table_data,
         "columns": feature_header,
@@ -30,8 +33,8 @@ $(document).ready(function(){
         "select" : true,
         "order" : []
     });
-
-    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customfilters-1" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customfilters-1">Exons    </label>    <label class="checkbox-inline" class="customfilters-1">      <input type="checkbox" value="mrnas" class="customfilters-1">mRNAs    </label>    <label class="checkbox-inline" class="customfilters-1">    <input type="checkbox" value="pps" class="customfilters-1">Polypeptides    </label>    <label class="checkbox-inline" class="customfilters-1">    <input type="checkbox" value="ppds" class="customfilters-1">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customfilters-1">    <input type="checkbox" value="chrs" class="customfilters-1">Chromosomes    </label>    <label class="checkbox-inline" class="customfilters-1">    <input type="checkbox" value="lgs" class="customfilters-1">Linkage Groups    </label>    <button id="filtercustom-1" style="inline:block;position:relative;left:10px" class="customfilters">Render</button></div><li class="list-group-item"><span id="customHistogram-1"></span></li>');
+    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>Stack:</b> <label class="checkbox-inline">  <input type="checkbox" value="genes" class="customhistogram-1" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customhistogram-1">Exons    </label>    <label class="checkbox-inline" class="customhistogram-1">      <input type="checkbox" value="mrnas" class="customhistogram-1">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customhistogram-1">CDS    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="pps" class="customhistogram-1">Polypeptides    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="ppds" class="customhistogram-1">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="chrs" class="customhistogram-1">Chromosomes    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="lgs" class="customhistogram-1">Linkage Groups    </label>    <button id="filterhistogram-1" style="inline:block;position:relative;left:10px" class="customhistogram1">Render</button></div><li class="list-group-item"><span id="customHistogram-1"></span></li>');
+    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>XAXIS:</b> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customscatter-1x">Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customscatter-1x" checked>Exons    </label>    <label class="checkbox-inline" class="customscatter-1x">      <input type="checkbox" value="mrnas" class="customscatter-1x">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customscatter-1x">CDS    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="pps" class="customscatter-1x">Polypeptides    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="ppds" class="customscatter-1x">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="chrs" class="customscatter-1x">Chromosomes    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="lgs" class="customscatter-1x">Linkage Groups    </label></div>    <div class="container" style="position:relative;left:-50px;padding-bottom:10px"> <b>YAXIS:</b> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customscatter-1y" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customscatter-1y">Exons    </label>    <label class="checkbox-inline" class="customscatter-1y">      <input type="checkbox" value="mrnas" class="customscatter-1y">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customscatter-1y">CDS    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="pps" class="customscatter-1y">Polypeptides    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="ppds" class="customscatter-1y">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="chrs" class="customscatter-1y">Chromosomes    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="lgs" class="customscatter-1y">Linkage Groups    </label>    <button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div><li class="list-group-item"><span id="customScatter-1"></span></li>');
     var customHistogram1 = dc.barChart("#customHistogram-1");
     customHistogram1
         .width(w)
@@ -43,28 +46,28 @@ $(document).ready(function(){
         .xAxisLabel("Organism Identifier")
         .yAxisLabel("Counts");
     var count = 0;
-    var all_filters = generateFilters(organismFeatures, global_domain_filter);
+    var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
     for (var i = 0;i<histogramSelection.length;i++){
        var k_label = histogramSelection[i].label;
        var k_key = histogramSelection[i].key;
        var k_plot = histogramSelection[i].show;
        if(k_plot === true){
            if (count == 0){
-               customHistogram1.group(all_filters[k_key], k_label);
+               customHistogram1.group(histogram_filters[k_key], k_label);
            } else {
-               customHistogram1.stack(all_filters[k_key], k_label);
+               customHistogram1.stack(histogram_filters[k_key], k_label);
            }
            count++;
         }
     }
     customHistogram1
-        .group(all_filters['genes'], histogramSelection['genes'])
+        .group(histogram_filters['genes'], histogramSelection['genes'])
         .transitionDuration(10)
         .legend((dc.legend().x(40).y(0).itemHeight(16).gap(4)))
         .elasticY(true)
         .on('renderlet', function(chart){
         chart.selectAll('rect').on('click.custom', function(d){
-            var chartI = dc.chartRegistry.list('organismfeatures_group');
+            var chartI = dc.chartRegistry.list('histogramfeatures_group');
             var table = $('#features-datatable').DataTable();
             var rows = $("#features-datatable").dataTable()._('tr');
             for (var r = 0; r < rows.length; r++){
@@ -97,7 +100,31 @@ $(document).ready(function(){
         });
     });
     customHistogram1.chartName = 'customHistogram1';
-    dc.chartRegistry.register(customHistogram1, 'organismfeatures_group');
+    dc.chartRegistry.register(customHistogram1, 'histogramfeatures_group');
+    var customScatter1 = dc.scatterPlot("#customScatter-1")
+    var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+    customScatter1
+        .width(scatw)
+        .height(600)
+        .dimension(scatter_filters['dimension'])
+        .group(scatter_filters['group'])
+        .margins({top: 50, right: 100, bottom: 75, left: left_margin - 40})
+        .symbolSize(8)
+        .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+        .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+        .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+        .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
+        .colorAccessor(function(d){
+            if (d){
+                var scat_color = taxonChroma.get(d.key[3] + ' ' + d.key[4])
+                return scat_color
+            }
+        })
+        .colors(function(d){
+            return d
+        });
+    customScatter1.chartName = 'customScatter1';
+    dc.chartRegistry.register(customScatter1, 'scatterfeatures_group');
     dc.renderAll();
     create_sunburst();
 
@@ -172,7 +199,8 @@ function create_icicle(){
             var s = [];
             global_domain_filter = {};
             var table = $('#features-datatable').DataTable();
-            var chartI = dc.chartRegistry.list('organismfeatures_group');
+            var chartI = dc.chartRegistry.list('histogramfeatures_group');
+            var chartJ = dc.chartRegistry.list('scatterfeatures_group');
             if (d.depth === 0){
                 reset_all();return
             }
@@ -210,7 +238,7 @@ function create_icicle(){
             }
             var len = s.length;
             w = (len * 30) + left_margin + 60;
-            var all_filters = generateFilters(organismFeatures, global_domain_filter);
+            var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
             for (var i = 0;i<chartI.length; i++){
                 var count = 0;
                 chartI[i].width(w);
@@ -218,13 +246,22 @@ function create_icicle(){
                 for (var j=0;j<features_filter.length;j++){
                     var key = features_filter[j];
                     if (count === 0){
-                        chartI[i].group(all_filters[key], histogramSelection[key]);
+                        chartI[i].group(histogram_filters[key], histogramSelection[key]);
                     } else {
-                        chartI[i].stack(all_filters[key], histogramSelection[key]);
+                        chartI[i].stack(histogram_filters[key], histogramSelection[key]);
                     }
                     count++;
                 }
                 chartI[i].filter(null);
+            }
+            var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            for (var i = 0;i<chartJ.length; i++){
+                var count = 0;
+                chartJ[i].group(scatter_filters['group'])
+                    .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                    .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                    .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                    .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1));
             }
             table.rows('.selected').deselect();
             dc.renderAll();
@@ -306,7 +343,8 @@ function create_sunburst(){
             var s = [];
             global_domain_filter = {};
             var table = $('#features-datatable').DataTable();
-            var chartI = dc.chartRegistry.list('organismfeatures_group');
+            var chartI = dc.chartRegistry.list('histogramfeatures_group');
+            var chartJ = dc.chartRegistry.list('scatterfeatures_group');
             if (d.depth === 0){
                 reset_all();return
             }
@@ -344,7 +382,7 @@ function create_sunburst(){
             }
             var len = s.length;
             w = (len * 30) + left_margin + 60;
-            var all_filters = generateFilters(organismFeatures, global_domain_filter);
+            var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
             for (var i = 0;i<chartI.length; i++){
                 var count = 0;
                 chartI[i].width(w);
@@ -352,13 +390,22 @@ function create_sunburst(){
                 for (var j=0;j<features_filter.length;j++){
                     var key = features_filter[j];
                     if (count === 0){
-                        chartI[i].group(all_filters[key], histogramSelection[key]);
+                        chartI[i].group(histogram_filters[key], histogramSelection[key]);
                     } else {
-                        chartI[i].stack(all_filters[key], histogramSelection[key]);
+                        chartI[i].stack(histogram_filters[key], histogramSelection[key]);
                     }
                     count++;
                 }
                 chartI[i].filter(null);
+            }
+            var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            for (var i = 0;i<chartJ.length; i++){
+                var count = 0;
+                chartJ[i].group(scatter_filters['group'])
+                    .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                    .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                    .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                    .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1));
             }
             table.rows('.selected').deselect();
             dc.renderAll();
@@ -397,13 +444,14 @@ function create_sunburst(){
             .range([0, r]);
 
         var table = $('#features-datatable').DataTable();
-        var chartI = dc.chartRegistry.list('organismfeatures_group');
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
         table.rows('.selected').deselect();
         table.search("").draw();
         var len = $("#features-datatable").dataTable()._('tr').length;
         var w = len * 30 + left_margin + 60;
         global_domain_filter = {};
-        var all_filters = generateFilters(organismFeatures, global_domain_filter);
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
         for (var i = 0;i<chartI.length; i++){
             var count = 0;
             chartI[i].width(w);
@@ -411,16 +459,25 @@ function create_sunburst(){
             for (var j=0;j<features_filter.length;j++){
                 var key = features_filter[j];
                 if (count === 0){
-                    chartI[i].group(all_filters[key], histogramSelection[key]);
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
                 } else {
-                    chartI[i].stack(all_filters[key], histogramSelection[key]);
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
                 }
                 count++;
             }
             chartI[i].filter(null);
         }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            for (var i = 0;i<chartJ.length; i++){
+                var count = 0;
+                chartJ[i].group(scatter_filters['group'])
+                    .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                    .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                    .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                    .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1));
+                chartJ[i].filter(null);
+            }
         dc.renderAll();
-
         dc.redrawAll();
         table.clear();
         table.rows.add(feature_table_data).order([]).draw();
@@ -443,9 +500,9 @@ function create_sunburst(){
         var tmp_data = {};
         for(var i=0;i<feature_table_data.length;i++){
            var tmp_vals = feature_table_data[i];
-           var genus = tmp_vals[3];
+           var genus = tmp_vals[2];
            var origin = tmp_vals[1];
-           var datum = {'color' : tmp_vals[3]+ ' ' +tmp_vals[4], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[14]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[16]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[17]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[13]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[14]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[16]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
            if (genus in tmp_data){
                if (origin in tmp_data[genus]){
                    tmp_data[genus][origin].push(datum);
@@ -480,9 +537,9 @@ function create_sunburst(){
         var tmp_data = {};
         for(var i=0;i<feature_table_data.length;i++){
            var tmp_vals = feature_table_data[i];
-           var genus = tmp_vals[3];
+           var genus = tmp_vals[2];
            var origin = tmp_vals[1];
-           var datum = {'color' : tmp_vals[3]+ ' ' +tmp_vals[4], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[14]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[16]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[17]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[13]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[14]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[16]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
            if (origin in tmp_data){
                if (genus in tmp_data[origin]){
                    tmp_data[origin][genus].push(datum);
@@ -514,7 +571,7 @@ function create_sunburst(){
     });
 
     $('#features-datatable tbody').on('click', 'tr', function(){
-        var chartI = dc.chartRegistry.list('organismfeatures_group');
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
         var rows = $('#features-datatable').DataTable().rows('.selected').data();
         var filtered_samples = organismFeatures.top(Infinity);
         for (var j = 0;j<chartI.length; j++){
@@ -528,7 +585,7 @@ function create_sunburst(){
 
     $('#features-datatable thead').on('click', 'th', function(){
         var s = [];
-        var chartI = dc.chartRegistry.list('organismfeatures_group');
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
         var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
         for (var i = 0;i<rows.length;i++){
             s.push(rows[i][0]);
@@ -541,7 +598,8 @@ function create_sunburst(){
 
     $("#features-datatable_filter input").on('keyup', function(k){
         var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
-        var chartI = dc.chartRegistry.list('organismfeatures_group');
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
         var s = [];
         global_domain_filter = {};
         for (var i = 0;i<rows.length;i++){
@@ -550,7 +608,7 @@ function create_sunburst(){
         }
         var len = rows.length;
         w = (len * 30) + left_margin + 60;
-        var all_filters = generateFilters(organismFeatures, global_domain_filter);
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
         for (var i = 0;i<chartI.length; i++){
             var count = 0;
             chartI[i].width(w);
@@ -558,23 +616,33 @@ function create_sunburst(){
             for (var j=0;j<features_filter.length;j++){
                 var key = features_filter[j];
                 if (count === 0){
-                    chartI[i].group(all_filters[key], histogramSelection[key]);
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
                 } else {
-                    chartI[i].stack(all_filters[key], histogramSelection[key]);
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
                 }
                 count++;
             }
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        for (var i = 0;i<chartJ.length; i++){
+            chartJ[i].group(scatter_filters['group'])
+                .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
         }
         dc.renderAll();
     });
 
     $("#filter-features").on('click' , function(e){
         var rows = $('#features-datatable').DataTable().rows('.selected').data();
-        var chartI = dc.chartRegistry.list('organismfeatures_group');
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
         var table = $('#features-datatable').DataTable();
         var s = [];
         var r = {};
         var searchstr = "";
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
         global_domain_filter = {};
         var len = rows.length;
         w = (len * 30) + left_margin + 60;
@@ -591,7 +659,7 @@ function create_sunburst(){
             }
         }
         table.search(searchstr, 1, true, true).draw();
-        var all_filters = generateFilters(organismFeatures, global_domain_filter);
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
         for (var i = 0;i<chartI.length; i++){
             var count = 0;
             chartI[i].width(w);
@@ -599,22 +667,30 @@ function create_sunburst(){
             for (var j=0;j<features_filter.length;j++){
                 var key = features_filter[j];
                 if (count === 0){
-                    chartI[i].group(all_filters[key], histogramSelection[key]);
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
                 } else {
-                    chartI[i].stack(all_filters[key], histogramSelection[key]);
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
                 }
                 count++;
             }
             chartI[i].filter(null);
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        for (var i = 0;i<chartJ.length; i++){
+            chartJ[i].group(scatter_filters['group'])
+                .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
         }
         table.rows('.selected').deselect();
         dc.renderAll();
     });
 
     $('button.customfilters').on('click', function(e){
-        var element = 'input.customfilters-' + $(this).attr('id').split('-')[1];
+        var element = 'input.customhistogram-' + $(this).attr('id').split('-')[1];
         var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
-        var chartI = dc.chartRegistry.list('organismfeatures_group');
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
         var s = [];
         global_domain_filter = {};
         for (var i = 0;i<rows.length;i++){
@@ -623,7 +699,7 @@ function create_sunburst(){
         }
         var len = rows.length;
         w = (len * 30) + left_margin + 60;
-        var all_filters = generateFilters(organismFeatures, global_domain_filter);
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
         for (var i = 0;i<chartI.length; i++){
             var count = 0;
             chartI[i].width(w);
@@ -631,9 +707,9 @@ function create_sunburst(){
             for (var j=0;j<features_filter.length;j++){
                 var key = features_filter[j];
                 if (count === 0){
-                    chartI[i].group(all_filters[key], histogramSelection[key]);
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
                 } else {
-                    chartI[i].stack(all_filters[key], histogramSelection[key]);
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
                 }
                 count++;
             }
@@ -641,22 +717,60 @@ function create_sunburst(){
        dc.renderAll();
     });
 
+    $('button.customscatter1').on('click', function(e){
+        var element = 'input.customhistogram-' + $(this).attr('id').split('-')[1];
+        var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+        var s = [];
+        global_domain_filter = {};
+        for (var i = 0;i<rows.length;i++){
+            s.push(rows[i][0]);
+            global_domain_filter[rows[i][0]] = 1;
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        for (var i = 0;i<chartJ.length; i++){
+            var count = 0;
+            chartJ[i].group(scatter_filters['group'])
+                .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
+        }
+        dc.renderAll();
+    });
+
     $('input[type=checkbox]').change(function(){
-        console.log('my bool ' + this.checked + 'this val ' + $(this).attr('value'));
         var datum = $(this).attr('value');
-        var graph_number = $(this).attr('class').split('-')[1];
-        console.log('my chart number ' + graph_number);
-        if (this.checked){
-            var index = features_filter.indexOf(datum);
-            if (index !== -1){
-                features_filter.splice(index, 1);
+        var graph_class = $(this).attr('class').split('-')[0],
+            graph_number = $(this).attr('class').split('-')[1];
+        if (graph_class === 'customhistogram'){
+            if (this.checked){
+                var index = features_filter.indexOf(datum);
+                if (index !== -1){
+                    features_filter.splice(index, 1);
+                }
+                features_filter.push(datum);
+            } else {
+                var index = features_filter.indexOf(datum);
+                if (index !== -1){
+                    features_filter.splice(index, 1);
+                }
             }
-            features_filter.push(datum);
         } else {
-            var index = features_filter.indexOf(datum);
-            if (index !== -1){
-                features_filter.splice(index, 1);
+            var graph_axis = graph_number.slice(-1);
+            var group = "input:checkbox[class='" + $(this).attr('class') + "']";
+            if (this.checked){
+                $(group).prop('checked', false);
+                $(this).prop('checked', true);
+            } else {
+                $(this).prop('checked', false);
             }
+            if (graph_axis === 'x'){
+                scatx = datum;
+            } else {
+                scaty = datum;
+            }
+            console.log(scatx, scaty);
         }
         console.log('my filter ' + features_filter);
     });
