@@ -28,7 +28,7 @@ logger.addHandler(log_handler)
 
 def connect_neo4j():
     host = '//0.0.0.0'
-    port = 7688
+    port = 7687
     auth = 'neo4j'
     pswd = 'neo4j'
     bolt = 'bolt:{}:{}'.format(host, port)
@@ -208,6 +208,7 @@ def dscensor_neo4j_test():
                     continue
                 org_genus = c['org_genus']
                 org_species = c['org_species']
+                label = c['label']
                 cstring = '{} {}'.format(org_genus, org_species)
                 p_o.append(
                        {'name' : label,

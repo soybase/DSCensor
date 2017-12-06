@@ -1,4 +1,4 @@
-var histogramSelection = {'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions'};
+var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions'};
 var global_domain_filter = {};
 var features_filter = ['genes'];
 var sunburst_on = 1;

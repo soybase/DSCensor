@@ -5,13 +5,13 @@ from api import help
 def document_root():
     return render_template('index.html', static_path='/static')
 
-@app.route('/large_example')
-def large_example():
-    return app.large_example
+#@app.route('/large_example')
+#def large_example():
+#    return app.large_example
 
-@app.route('/DSCensor_example')
-def dscensor_example():
-    return app.dscensor_example
+#@app.route('/DSCensor_example')
+#def dscensor_example():
+#    return app.dscensor_example
 
 @app.route('/DSCensor_example_wscatter')
 def dscensor_example_scatter():
