@@ -26,3 +26,7 @@ def medicago_metrics():
                    'templating/templates/medicago_assembly_metrics.html',
                    static_path='/static'
           )
+
+@app.route('/DSCensor_neo4j')
+def dscensor_neo4j():
+    return app.neo4j_example

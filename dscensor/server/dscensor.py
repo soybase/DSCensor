@@ -9,6 +9,7 @@ import logging
 from logging import Formatter
 from logging.handlers import RotatingFileHandler
 #from client.templating import generate_for_render, aggregate_dscensor_db
+from client.templating import neo4j_dscensor
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 
@@ -56,7 +57,8 @@ app.logger.addHandler(handler)
 # setup large example
 #app.large_example = generate_for_render.render_large_example()
 #app.dscensor_example = aggregate_dscensor_db.dscensor_test()
-# imports which expect plateparty.app to exist:
+app.neo4j_example = neo4j_dscensor.dscensor_neo4j_test()
+# imports which expect dscensor.app to exist:
 #from database import postgres_db_connect
 import views
 
