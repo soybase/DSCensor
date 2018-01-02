@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Feature Composition Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.1/crossfilter.min.js"></script>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.0-beta.31/dc.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
+    <script src="https://rawgit.com/legumeinfo/lis-taxon-symbology/master/dist/bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.0-beta.31/dc.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css">
+    <style>
+    a {color: blue;}
+    a.toggle-vis.active {color :purple;}
+    a.toggle-vis.visited {color : blue;}
+    .select-info {
+        visibility : hidden;
+    }
+    #customHistogram-1 .x.axis text {
+        text-anchor: end !important;
+        font-weight: bold;
+        transform: rotate(-30deg);
+    }
+    #customScatter-1 .x.axis text {
+        text-anchor: end !important;
+        font-weight: bold;
+        transform: rotate(-30deg);
+    }
+    #customHistogram-1 .x.axis line {
+        display : none;
+    }
+    #test-composite .svg {
+        display : none;
+    }
+    .chart {
+        display: block;
+        margin: auto;
+        margin-top: 40px;
+        font-size: 14px;
+    }
+    .popup {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .popup .popupText {
+        visibility: hidden;
+        width: 600px;
+        background-color: #555;
+        color: #fff;
+        /*text-align: center;*/
+        border-radius: 6px;
+        padding: 10px 0;
+        padding-left: 15px;
+        padding-top: 15px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -80px;
+    }
+    .popup .show {
+        visibility: visible;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s
+    }
+    @-webkit-keyframes fadeIn {
+        from {opacity: 0;} 
+        to {opacity: 1;}
+    }
+    @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity:1 ;}
+    }    
+</style>
+</head>
+<body>
+    <div class="container-fluid" id="feature_body">
+        <h3 class="list-group-item" align="center" id="partition_title"><b><u>Partition Display of Ontological Features by DB</u></b></h3>
+	    <div id="hierarchy_path" class="counter">At Root Level Origin</div>
+        <div id="organism_partition" width="100%">
+            <div id="partition_display" width="100%" align="center"></div>
+    	</div>
+        <div class="container" style="padding-top:15px" align="center">
+            <button id="display_sunburst" style="inline:block;position:relative;left:10px">Sunburst</button>
+            <button id="display_icicle" style="inline:block;position:relative;left:10px">Icicle</button>
+            <button id="origin_genus" style="inline:block;position:relative;left:10px">Genus</button>
+            <button id="origin_db" style="inline:block;position:relative;left:10px">Database</button>
+        </div>
+        <h3 class="list-group-item" align="center"><b><u>Ontological Feature Counts by Organism</u></b></h3>
+        <li class="list-group-item">
+            <div style="margin-top:0.5em;margin-bottom:0.5em">
+                <b>Toggle Column:</b>
+    <a class="toggle-vis" data-column="Unique Label">Unique Label</a>
+ /
+    <a class="toggle-vis" data-column="Origin">Origin</a>
+ /
+    <a class="toggle-vis" data-column="Genus">Genus</a>
+ /
+    <a class="toggle-vis" data-column="Species">Species</a>
+ /
+    <a class="toggle-vis" data-column="infraspecies">infraspecies</a>
+ /
+    <a class="toggle-vis" data-column="Common Name">Common Name</a>
+ /
+    <a class="toggle-vis" data-column="Linkout Example">Linkout Example</a>
+ /
+    <a class="toggle-vis" data-column="Genes">Genes</a>
+ /
+    <a class="toggle-vis" data-column="mRNAs">mRNAs</a>
+ /
+    <a class="toggle-vis" data-column="Exons">Exons</a>
+ /
+    <a class="toggle-vis" data-column="CDS">CDS</a>
+ /
+    <a class="toggle-vis" data-column="3&#39; UTR">3&#39; UTR</a>
+ /
+    <a class="toggle-vis" data-column="5&#39; UTR">5&#39; UTR</a>
+ /
+            </div>
+        </li>
+        <table class="table table-striped table-bordered" id="features-datatable"></table>
+        <button id="filter-features">Filter Table Rows</button>
+        <button id="reset-features">RESET ALL</button>
+    </div>
+</body>
+    <script>
+var color_anchors = function(t){
+    if (t.hasClass('active')){
+        t.removeClass('active');
+        t.addClass('visited');
+    } else {
+        t.removeClass('visited');
+        t.addClass('active');
+    }
+};        var feature_counts = crossfilter([{"origin": "HAPMAP", "exons": 298601, "org_infra": "A17_HM341", "genes": 50894, "linkout_example": "N/A", "cds": 284973, "3p_utrs": 35951, "mrnas": 62319, "org_species": "truncatula", "label": "medtr.A17_HM341.v4.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 38869}, {"origin": "LIS", "exons": 186435, "org_infra": "G19833", "genes": 27197, "linkout_example": "N/A", "cds": 175967, "3p_utrs": 28455, "mrnas": 31638, "org_species": "vulgaris", "label": "phavu.G19833.gnm1.ann1.pScz.gene_exons.gff3.gz", "org_genus": "phaseolus", "org_cname": "N/A", "5p_utrs": 32022}, {"origin": "HAPMAP", "exons": 248003, "org_infra": "HM060", "genes": 64405, "linkout_example": "N/A", "cds": 248003, "3p_utrs": 0, "mrnas": 64405, "org_species": "truncatula", "label": "medtr.HM060.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 248717, "org_infra": "HM034", "genes": 64342, "linkout_example": "N/A", "cds": 248717, "3p_utrs": 0, "mrnas": 64342, "org_species": "truncatula", "label": "medtr.HM034.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 249731, "org_infra": "HM056", "genes": 65413, "linkout_example": "N/A", "cds": 249731, "3p_utrs": 0, "mrnas": 65413, "org_species": "truncatula", "label": "medtr.HM056.v2.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 250945, "org_infra": "HM185", "genes": 65712, "linkout_example": "N/A", "cds": 250945, "3p_utrs": 0, "mrnas": 65712, "org_species": "truncatula", "label": "medtr.HM185.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 246560, "org_infra": "HM023", "genes": 64116, "linkout_example": "N/A", "cds": 246560, "3p_utrs": 0, "mrnas": 64116, "org_species": "truncatula", "label": "medtr.HM023.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 247255, "org_infra": "HM004", "genes": 64157, "linkout_example": "N/A", "cds": 247255, "3p_utrs": 0, "mrnas": 64157, "org_species": "truncatula", "label": "medtr.HM004.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "LIS", "exons": 155992, "org_infra": "ICC4958", "genes": 30257, "linkout_example": "N/A", "cds": 152808, "3p_utrs": 12492, "mrnas": 30686, "org_species": "arietinum", "label": "cicar.ICC4958.gnm2.ann1.LCVX.gene_function.gff3.gz", "org_genus": "cicer", "org_cname": "N/A", "5p_utrs": 13470}, {"origin": "HAPMAP", "exons": 251157, "org_infra": "HM050", "genes": 65471, "linkout_example": "N/A", "cds": 251157, "3p_utrs": 0, "mrnas": 65471, "org_species": "truncatula", "label": "medtr.HM050.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 250404, "org_infra": "HM010", "genes": 65155, "linkout_example": "N/A", "cds": 250404, "3p_utrs": 0, "mrnas": 65155, "org_species": "truncatula", "label": "medtr.HM010.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "LIS", "exons": 443901, "org_infra": "Wm82", "genes": 54175, "linkout_example": "N/A", "cds": 412262, "3p_utrs": 71737, "mrnas": 73320, "org_species": "max", "label": "glyma.Wm82.gnm1.ann1.DvBy.gene_exons.gff3.gz", "org_genus": "glycine", "org_cname": "N/A", "5p_utrs": 80807}, {"origin": "HAPMAP", "exons": 250890, "org_infra": "HM129", "genes": 65416, "linkout_example": "N/A", "cds": 250890, "3p_utrs": 0, "mrnas": 65416, "org_species": "truncatula", "label": "medtr.HM129.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "LIS", "exons": 572504, "org_infra": "Wm82", "genes": 56044, "linkout_example": "N/A", "cds": 525934, "3p_utrs": 89512, "mrnas": 88647, "org_species": "max", "label": "glyma.Wm82.gnm2.ann1.RVB6.gene_exons.gff3.gz", "org_genus": "glycine", "org_cname": "N/A", "5p_utrs": 104353}, {"origin": "HAPMAP", "exons": 250214, "org_infra": "HM095", "genes": 65293, "linkout_example": "N/A", "cds": 250214, "3p_utrs": 0, "mrnas": 65293, "org_species": "truncatula", "label": "medtr.HM095.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "LIS", "exons": 0, "org_infra": "CDCFrontier", "genes": 28254, "linkout_example": "N/A", "cds": 139305, "3p_utrs": 0, "mrnas": 28254, "org_species": "arietinum", "label": "cicar.CDCFrontier.gnm1.ann1.nRhs.gene_models.gff3.gz", "org_genus": "cicer", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "LIS", "exons": 235420, "org_infra": "G19833", "genes": 27433, "linkout_example": "N/A", "cds": 218847, "3p_utrs": 37094, "mrnas": 36995, "org_species": "vulgaris", "label": "phavu.G19833.gnm2.ann1.PB8d.gene_exons.gff3.gz", "org_genus": "phaseolus", "org_cname": "N/A", "5p_utrs": 42711}, {"origin": "HAPMAP", "exons": 244280, "org_infra": "HM058", "genes": 63887, "linkout_example": "N/A", "cds": 244280, "3p_utrs": 0, "mrnas": 63887, "org_species": "truncatula", "label": "medtr.HM058.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}, {"origin": "HAPMAP", "exons": 252926, "org_infra": "HM125", "genes": 66976, "linkout_example": "N/A", "cds": 252926, "3p_utrs": 0, "mrnas": 66976, "org_species": "truncatula", "label": "medtr.HM125.v1.0.gff3", "org_genus": "medicago", "org_cname": "N/A", "5p_utrs": 0}]);
+        var feature_header = [{"title": "Unique Label"}, {"title": "Origin"}, {"title": "Genus"}, {"title": "Species"}, {"title": "infraspecies"}, {"title": "Common Name"}, {"title": "Linkout Example"}, {"title": "Genes"}, {"title": "mRNAs"}, {"title": "Exons"}, {"title": "CDS"}, {"title": "3' UTR"}, {"title": "5' UTR"}];
+        var feature_table_data = [["medtr.A17_HM341.v4.0.gff3", "HAPMAP", "medicago", "truncatula", "A17_HM341", "N/A", "<div class='popup'><button value='popuptext1' class='popupLinkout'>medtr.Medtr2g020630</button><span class='popupText' id='popuptext1'>test</span></div>", 50894, 62319, 298601, 284973, 38869, 35951], ["phavu.G19833.gnm1.ann1.pScz.gene_exons.gff3.gz", "LIS", "phaseolus", "vulgaris", "G19833", "N/A", "N/A", 27197, 31638, 186435, 175967, 32022, 28455], ["medtr.HM060.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM060", "N/A", "<div class='popup'><button value='popuptext8' class='popupLinkout'>medtr.g15912</button><span class='popupText' id='popuptext8'>test</span></div>", 64405, 64405, 248003, 248003, 0, 0], ["medtr.HM034.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM034", "N/A", "<div class='popup'><button value='popuptext9' class='popupLinkout'>medtr.g31829</button><span class='popupText' id='popuptext9'>test</span></div>", 64342, 64342, 248717, 248717, 0, 0], ["medtr.HM056.v2.0.gff3", "HAPMAP", "medicago", "truncatula", "HM056", "N/A", "<div class='popup'><button value='popuptext10' class='popupLinkout'>medtr.g7541</button><span class='popupText' id='popuptext10'>test</span></div>", 65413, 65413, 249731, 249731, 0, 0], ["medtr.HM185.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM185", "N/A", "<div class='popup'><button value='popuptext11' class='popupLinkout'>medtr.g21747</button><span class='popupText' id='popuptext11'>test</span></div>", 65712, 65712, 250945, 250945, 0, 0], ["medtr.HM023.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM023", "N/A", "<div class='popup'><button value='popuptext12' class='popupLinkout'>medtr.g27039</button><span class='popupText' id='popuptext12'>test</span></div>", 64116, 64116, 246560, 246560, 0, 0], ["medtr.HM004.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM004", "N/A", "<div class='popup'><button value='popuptext13' class='popupLinkout'>medtr.g12929</button><span class='popupText' id='popuptext13'>test</span></div>", 64157, 64157, 247255, 247255, 0, 0], ["cicar.ICC4958.gnm2.ann1.LCVX.gene_function.gff3.gz", "LIS", "cicer", "arietinum", "ICC4958", "N/A", "<div class='popup'><button value='popuptext3' class='popupLinkout'>cicar.ICC4958.Ca_09064</button><span class='popupText' id='popuptext3'>test</span></div>", 30257, 30686, 155992, 152808, 13470, 12492], ["medtr.HM050.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM050", "N/A", "<div class='popup'><button value='popuptext14' class='popupLinkout'>medtr.g16858</button><span class='popupText' id='popuptext14'>test</span></div>", 65471, 65471, 251157, 251157, 0, 0], ["medtr.HM010.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM010", "N/A", "<div class='popup'><button value='popuptext15' class='popupLinkout'>medtr.g49814</button><span class='popupText' id='popuptext15'>test</span></div>", 65155, 65155, 250404, 250404, 0, 0], ["glyma.Wm82.gnm1.ann1.DvBy.gene_exons.gff3.gz", "LIS", "glycine", "max", "Wm82", "N/A", "N/A", 54175, 73320, 443901, 412262, 80807, 71737], ["medtr.HM129.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM129", "N/A", "<div class='popup'><button value='popuptext16' class='popupLinkout'>medtr.g53574</button><span class='popupText' id='popuptext16'>test</span></div>", 65416, 65416, 250890, 250890, 0, 0], ["glyma.Wm82.gnm2.ann1.RVB6.gene_exons.gff3.gz", "LIS", "glycine", "max", "Wm82", "N/A", "<div class='popup'><button value='popuptext5' class='popupLinkout'>glyma.19g194300</button><span class='popupText' id='popuptext5'>test</span></div>", 56044, 88647, 572504, 525934, 104353, 89512], ["medtr.HM095.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM095", "N/A", "<div class='popup'><button value='popuptext17' class='popupLinkout'>medtr.g61546</button><span class='popupText' id='popuptext17'>test</span></div>", 65293, 65293, 250214, 250214, 0, 0], ["cicar.CDCFrontier.gnm1.ann1.nRhs.gene_models.gff3.gz", "LIS", "cicer", "arietinum", "CDCFrontier", "N/A", "<div class='popup'><button value='popuptext6' class='popupLinkout'>cicar.CDCFrontier.Ca_07836</button><span class='popupText' id='popuptext6'>test</span></div>", 28254, 28254, 0, 139305, 0, 0], ["phavu.G19833.gnm2.ann1.PB8d.gene_exons.gff3.gz", "LIS", "phaseolus", "vulgaris", "G19833", "N/A", "<div class='popup'><button value='popuptext7' class='popupLinkout'>phavu.Phvul.002G085200</button><span class='popupText' id='popuptext7'>test</span></div>", 27433, 36995, 235420, 218847, 42711, 37094], ["medtr.HM058.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM058", "N/A", "<div class='popup'><button value='popuptext18' class='popupLinkout'>medtr.g10350</button><span class='popupText' id='popuptext18'>test</span></div>", 63887, 63887, 244280, 244280, 0, 0], ["medtr.HM125.v1.0.gff3", "HAPMAP", "medicago", "truncatula", "HM125", "N/A", "<div class='popup'><button value='popuptext19' class='popupLinkout'>medtr.g3539</button><span class='popupText' id='popuptext19'>test</span></div>", 66976, 66976, 252926, 252926, 0, 0]];
+        var partition_data = {"name": "Origin", "children": [{"name": "HAPMAP", "children": [{"color": "medicago 0", "name": "medicago", "children": [{"color": "medicago truncatula", "name": "medtr.A17_HM341.v4.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 50894}, {"count": 1, "name": "mRNAs", "number": 62319}, {"count": 1, "name": "Exons", "number": 298601}, {"count": 1, "name": "CDS", "number": 284973}, {"count": 1, "name": "5' UTR", "number": 38869}, {"count": 1, "name": "3' UTR", "number": 35951}]}, {"color": "medicago truncatula", "name": "medtr.HM004.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 64157}, {"count": 1, "name": "mRNAs", "number": 64157}, {"count": 1, "name": "Exons", "number": 247255}, {"count": 1, "name": "CDS", "number": 247255}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM010.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 65155}, {"count": 1, "name": "mRNAs", "number": 65155}, {"count": 1, "name": "Exons", "number": 250404}, {"count": 1, "name": "CDS", "number": 250404}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM023.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 64116}, {"count": 1, "name": "mRNAs", "number": 64116}, {"count": 1, "name": "Exons", "number": 246560}, {"count": 1, "name": "CDS", "number": 246560}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM034.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 64342}, {"count": 1, "name": "mRNAs", "number": 64342}, {"count": 1, "name": "Exons", "number": 248717}, {"count": 1, "name": "CDS", "number": 248717}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM050.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 65471}, {"count": 1, "name": "mRNAs", "number": 65471}, {"count": 1, "name": "Exons", "number": 251157}, {"count": 1, "name": "CDS", "number": 251157}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM056.v2.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 65413}, {"count": 1, "name": "mRNAs", "number": 65413}, {"count": 1, "name": "Exons", "number": 249731}, {"count": 1, "name": "CDS", "number": 249731}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM058.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 63887}, {"count": 1, "name": "mRNAs", "number": 63887}, {"count": 1, "name": "Exons", "number": 244280}, {"count": 1, "name": "CDS", "number": 244280}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM060.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 64405}, {"count": 1, "name": "mRNAs", "number": 64405}, {"count": 1, "name": "Exons", "number": 248003}, {"count": 1, "name": "CDS", "number": 248003}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM095.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 65293}, {"count": 1, "name": "mRNAs", "number": 65293}, {"count": 1, "name": "Exons", "number": 250214}, {"count": 1, "name": "CDS", "number": 250214}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM125.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 66976}, {"count": 1, "name": "mRNAs", "number": 66976}, {"count": 1, "name": "Exons", "number": 252926}, {"count": 1, "name": "CDS", "number": 252926}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM129.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 65416}, {"count": 1, "name": "mRNAs", "number": 65416}, {"count": 1, "name": "Exons", "number": 250890}, {"count": 1, "name": "CDS", "number": 250890}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}, {"color": "medicago truncatula", "name": "medtr.HM185.v1.0.gff3", "children": [{"count": 1, "name": "Genes", "number": 65712}, {"count": 1, "name": "mRNAs", "number": 65712}, {"count": 1, "name": "Exons", "number": 250945}, {"count": 1, "name": "CDS", "number": 250945}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}]}]}, {"name": "LIS", "children": [{"color": "glycine 0", "name": "glycine", "children": [{"color": "glycine max", "name": "glyma.Wm82.gnm2.ann1.RVB6.gene_exons.gff3.gz", "children": [{"count": 1, "name": "Genes", "number": 56044}, {"count": 1, "name": "mRNAs", "number": 88647}, {"count": 1, "name": "Exons", "number": 572504}, {"count": 1, "name": "CDS", "number": 525934}, {"count": 1, "name": "5' UTR", "number": 104353}, {"count": 1, "name": "3' UTR", "number": 89512}]}, {"color": "glycine max", "name": "glyma.Wm82.gnm1.ann1.DvBy.gene_exons.gff3.gz", "children": [{"count": 1, "name": "Genes", "number": 54175}, {"count": 1, "name": "mRNAs", "number": 73320}, {"count": 1, "name": "Exons", "number": 443901}, {"count": 1, "name": "CDS", "number": 412262}, {"count": 1, "name": "5' UTR", "number": 80807}, {"count": 1, "name": "3' UTR", "number": 71737}]}]}, {"color": "cicer 0", "name": "cicer", "children": [{"color": "cicer arietinum", "name": "cicar.ICC4958.gnm2.ann1.LCVX.gene_function.gff3.gz", "children": [{"count": 1, "name": "Genes", "number": 30257}, {"count": 1, "name": "mRNAs", "number": 30686}, {"count": 1, "name": "Exons", "number": 155992}, {"count": 1, "name": "CDS", "number": 152808}, {"count": 1, "name": "5' UTR", "number": 13470}, {"count": 1, "name": "3' UTR", "number": 12492}]}, {"color": "cicer arietinum", "name": "cicar.CDCFrontier.gnm1.ann1.nRhs.gene_models.gff3.gz", "children": [{"count": 1, "name": "Genes", "number": 28254}, {"count": 1, "name": "mRNAs", "number": 28254}, {"count": 1, "name": "Exons", "number": 0}, {"count": 1, "name": "CDS", "number": 139305}, {"count": 1, "name": "5' UTR", "number": 0}, {"count": 1, "name": "3' UTR", "number": 0}]}]}, {"color": "phaseolus 0", "name": "phaseolus", "children": [{"color": "phaseolus vulgaris", "name": "phavu.G19833.gnm2.ann1.PB8d.gene_exons.gff3.gz", "children": [{"count": 1, "name": "Genes", "number": 27433}, {"count": 1, "name": "mRNAs", "number": 36995}, {"count": 1, "name": "Exons", "number": 235420}, {"count": 1, "name": "CDS", "number": 218847}, {"count": 1, "name": "5' UTR", "number": 42711}, {"count": 1, "name": "3' UTR", "number": 37094}]}, {"color": "phaseolus vulgaris", "name": "phavu.G19833.gnm1.ann1.pScz.gene_exons.gff3.gz", "children": [{"count": 1, "name": "Genes", "number": 27197}, {"count": 1, "name": "mRNAs", "number": 31638}, {"count": 1, "name": "Exons", "number": 186435}, {"count": 1, "name": "CDS", "number": 175967}, {"count": 1, "name": "5' UTR", "number": 32022}, {"count": 1, "name": "3' UTR", "number": 28455}]}]}]}]};
+var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR"};
+var global_domain_filter = {};
+var features_filter = ['genes'];
+var sunburst_on = 1;
+var scatx = 'exons';
+var scaty = 'genes';
+$(document).ready(function(){
+    var acount = 0;
+    var name_length = 0;
+    var ordering = [];
+    var organismFeatures = feature_counts.dimension(function(d){
+        acount++;
+        if (d.label.length > name_length){
+            name_length = d.label.length;
+        }
+        ordering.push(d.label);
+        return d.label;
+    });
+    var left_margin = name_length * 4 + 10;
+    var bottom_margin = name_length * 4 + 10;
+    var w = acount * 30 + left_margin + 60;
+    var scatw = 800;
+    var organismFeaturesTable = $('#features-datatable').dataTable({
+        "data": feature_table_data,
+        "columns": feature_header,
+        "colReorder" : {
+            fixedColumnsLeft: 1
+        },
+        "search": {
+            "caseInsensitive": true,
+            "regex": true
+        },
+        "select" : true,
+        "order" : [],
+//        "scrollY": "200px",
+//        "scrollCollapse": true,
+//        "paging" : false
+    });
+    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>Stack:</b> <label class="checkbox-inline">  <input type="checkbox" value="genes" class="customhistogram-1" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customhistogram-1">Exons    </label>    <label class="checkbox-inline" class="customhistogram-1">      <input type="checkbox" value="mrnas" class="customhistogram-1">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customhistogram-1">CDS    </label>    <label class="checkbox-inline">      <input type="checkbox" value="3p_utrs" class="customhistogram-1">3&#39; UTR    </label>    <label class="checkbox-inline">      <input type="checkbox" value="5p_utrs" class="customhistogram-1">5&#39; UTR    </label>    <button id="filterhistogram-1" style="inline:block;position:relative;left:10px" class="customhistogram1">Render</button></div><li class="list-group-item"><span id="customHistogram-1"></span></li>');
+    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>XAXIS:</b> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customscatter-1x">Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customscatter-1x" checked>Exons    </label>    <label class="checkbox-inline" class="customscatter-1x">      <input type="checkbox" value="mrnas" class="customscatter-1x">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customscatter-1x">CDS    </label>    <label class="checkbox-inline">      <input type="checkbox" value="3p_utrs" class="customscatter-1x">3&#39; UTR    </label>    <label class="checkbox-inline">      <input type="checkbox" value="5p_utrs" class="customscatter-1x">5&#39; UTR    </label>    </div>    <div class="container" style="position:relative;left:-50px;padding-bottom:10px"> <b>YAXIS:</b> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customscatter-1y" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customscatter-1y">Exons    </label>    <label class="checkbox-inline" class="customscatter-1y">      <input type="checkbox" value="mrnas" class="customscatter-1y">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customscatter-1y">CDS    </label>    <label class="checkbox-inline">      <input type="checkbox" value="3p_utrs" class="customscatter-1y">3&#39; UTR    </label>    <label class="checkbox-inline">      <input type="checkbox" value="5p_utrs" class="customscatter-1y">5&#39; UTR    </label>    <button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div><li class="list-group-item"><span id="customScatter-1"></span></li>');
+    var customHistogram1 = dc.barChart("#customHistogram-1");
+    customHistogram1
+        .width(w)
+        .height(600)
+        .dimension(organismFeatures)
+        .margins({top: 50, right: 50, bottom: bottom_margin, left: left_margin})
+        .x(d3.scale.ordinal().domain(ordering))
+        .xUnits(dc.units.ordinal)
+        .xAxisLabel("Organism Identifier")
+        .yAxisLabel("Counts");
+    var count = 0;
+    var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+    for (var i = 0;i<histogramSelection.length;i++){
+       var k_label = histogramSelection[i].label;
+       var k_key = histogramSelection[i].key;
+       var k_plot = histogramSelection[i].show;
+       if(k_plot === true){
+           if (count == 0){
+               customHistogram1.group(histogram_filters[k_key], k_label);
+           } else {
+               customHistogram1.stack(histogram_filters[k_key], k_label);
+           }
+           count++;
+        }
+    }
+    customHistogram1
+        .group(histogram_filters['genes'], histogramSelection['genes'])
+        .transitionDuration(10)
+        .legend((dc.legend().x(40).y(0).itemHeight(16).gap(4)))
+        .elasticY(true)
+        .on('renderlet', function(chart){
+        chart.selectAll('rect').on('click.custom', function(d){
+            var chartI = dc.chartRegistry.list('histogramfeatures_group');
+            var table = $('#features-datatable').DataTable();
+            var rows = $("#features-datatable").dataTable()._('tr');
+            for (var r = 0; r < rows.length; r++){
+                if (rows[r][0] === d.x){
+                    var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
+                        return table.cell( rowIdx, 0 ).data() === d.x ? true : false;
+                    });
+                    if (table.rows(indexes).nodes().to$().hasClass('selected') === false){
+                        table.rows(indexes)
+                             .nodes()
+                             .to$()
+                             .addClass('selected');
+                        console.log(rows[r], indexes);
+                    } else {
+                        table.rows(indexes)
+                             .nodes()
+                             .to$()
+                             .removeClass('selected');
+                    }
+                }
+            }
+            for (var i = 0; i < chartI.length; i++) {
+                if (chartI[i].chartName !== 'customHistogram1'){
+                    chartI[i].filter(d.x);
+                    console.log(chartI[i].chartName);
+                }
+            }
+            dc.renderAll();
+            console.log(d.x + "thing" + chartI);
+        });
+    });
+    customHistogram1.chartName = 'customHistogram1';
+    dc.chartRegistry.register(customHistogram1, 'histogramfeatures_group');
+    var customScatter1 = dc.scatterPlot("#customScatter-1")
+    var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+    customScatter1
+        .width(scatw)
+        .height(600)
+        .dimension(scatter_filters['dimension'])
+        .group(scatter_filters['group'])
+        .margins({top: 50, right: 100, bottom: 75, left: left_margin - 40})
+        .symbolSize(8)
+        .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+        .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+        .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+        .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
+        .colorAccessor(function(d){
+            if (d){
+                var scat_color = taxonChroma.get(d.key[3] + ' ' + d.key[4])
+                return scat_color
+            }
+        })
+        .colors(function(d){
+            return d
+        });
+    customScatter1.chartName = 'customScatter1';
+    dc.chartRegistry.register(customScatter1, 'scatterfeatures_group');
+    dc.renderAll();
+    create_sunburst();
+
+function create_icicle(){
+    var dw = 1000,
+        dh = 1000,
+        x = d3.scale.linear().range([0, dw]),
+        y = d3.scale.linear().range([0, dh]);
+    var vis = d3.select('#partition_display').append('svg')
+                .attr("width", dw)
+                .attr("height", dh);
+    var partition = d3.layout.partition()
+                      .value(function(d) { return d.count; });
+    var colors = d3.scale.category20c();
+    createchart(partition_data);
+
+    function createchart(root) {
+        var g = vis.selectAll("g")
+          .data(partition.nodes(root))
+          .enter().append("svg:g")
+          .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
+          .on("click", zoom);
+
+        var kx = dw / root.dx,
+            ky = dh;
+
+        g.append("svg:rect")
+          .attr("width", root.dy * kx)
+          .attr("height", function(d) { return d.dx * ky; })
+          .attr("fill", function(d) {if (d.color){console.log(d.color + ' ' + taxonChroma.get(d.color));return taxonChroma.get(d.color)};return colors(d.name)})
+
+        g.append("svg:text")
+          .attr("transform", transform)
+          .style("opacity", function(d) { return d.dx * ky < 15 ? 0 : 1 })
+          .style("font-size", function(d) { console.log(d.dy, d.y, d.dx, d.x, d.dy * 100 / d.name.length + 'rem');return d.dx > 0.06 ? "1em" : "1rem";return "1em";})
+          .text(function(d) { if (d.parent){console.log(ancestors(d));};if(d.count){return d.name + ':' + d.number};if(d.name){return d.name; }})
+
+        d3.select("#partition_display")
+          .on("click", function() { zoom(root); })
+
+        function zoom(d) {
+            console.log('clicked');
+            if (!d.children){ reset_all(); return};
+            kx = (d.y ? dw - 40 : dw) / (1 - d.y);
+            var crums = d.name;
+            if (d.parent){
+                crums = ancestors(d);
+                $('.counter').html(crums.join('/'));
+            } else {
+                $('.counter').html('At ROOT LEVEL Organisms');
+            }
+            console.log(crums);
+            ky = dh / d.dx;
+            x.domain([d.y, 1]).range([d.y ? 40 : 0, dw]);
+            y.domain([d.x, d.x + d.dx]);
+            var t = g.transition()
+                     .duration(500)
+                     .attr("transform",
+                      function(d) {
+                          return "translate(" + x(d.y) + "," + y(d.x) + ")";
+                      });
+            t.select("rect")
+             .attr("width", d.dy * kx)
+             .attr("height", function(d) { return d.dx * ky; });
+
+            t.select("text")
+             .attr("transform", transform)
+             .style("opacity", function(d) { return d.dx * ky < 15 ? 0 : 1 });
+
+            d3.event.stopPropagation();
+            var searchstr = "";
+            var s = [];
+            global_domain_filter = {};
+            var table = $('#features-datatable').DataTable();
+            var chartI = dc.chartRegistry.list('histogramfeatures_group');
+            var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+            if (d.depth === 0){
+                reset_all();return
+            }
+            if (d.depth === 1){
+                for (var i=0;i<d.children.length;i++){
+                    var cstep = d.children[i]
+                    for (var j=0;j<cstep.children.length;j++){
+                        global_domain_filter[cstep.children[j].name] = 1;
+                        if (searchstr.length < 1){
+                            searchstr = '(' + cstep.children[j].name + ')[^\\S+]';
+                        } else {
+                            searchstr += '|(' + cstep.children[j].name + ')[^\\S+]';
+                        }
+                    }
+                }
+            }
+            if (d.depth === 2){
+                for (var i=0;i<d.children.length;i++){
+                    global_domain_filter[d.children[i].name] = 1;
+                    if (searchstr.length < 1){
+                        searchstr = '(' + d.children[i].name + ')[^\\S+]';
+                    } else {
+                        searchstr += '|(' + d.children[i].name + ')[^\\S+]';
+                    }
+                }
+            }
+            if (d.depth === 3){
+                searchstr = '(' + d.name + ')[^\\S+]';
+                global_domain_filter[d.name] = 1;
+            }
+            table.search(searchstr, 1, true, true).draw();
+            var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+            for (i=0;i<rows.length;i++){
+                s.push(rows[i][0]);
+            }
+            var len = s.length;
+            w = (len * 30) + left_margin + 60;
+            var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+            for (var i = 0;i<chartI.length; i++){
+                var count = 0;
+                chartI[i].width(w);
+                chartI[i].x(d3.scale.ordinal().domain(s));
+                for (var j=0;j<features_filter.length;j++){
+                    var key = features_filter[j];
+                    if (count === 0){
+                        chartI[i].group(histogram_filters[key], histogramSelection[key]);
+                    } else {
+                        chartI[i].stack(histogram_filters[key], histogramSelection[key]);
+                    }
+                    count++;
+                }
+                chartI[i].filter(null);
+            }
+            var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            for (var i = 0;i<chartJ.length; i++){
+                var count = 0;
+                chartJ[i].group(scatter_filters['group'])
+                    .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                    .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                    .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                    .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1));
+            }
+            table.rows('.selected').deselect();
+            dc.renderAll();
+        }
+        function transform(d) {
+            return "translate(8," + d.dx * ky / 2 + ")";
+        }
+    }
+}
+function create_sunburst(){
+    var width = 1000,
+        height = 1000,
+        pi = Math.PI,
+        r = Math.min(width, height) / 2;
+
+    var x = d3.scale.linear()
+        .range([0, 2 * pi]);
+
+    var y = d3.scale.linear()
+        .range([0, r]);
+
+    var svg = d3.select('#partition_display').append('svg')
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
+
+    var arc = d3.svg.arc()
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * pi, x(d.x))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * pi, x(d.x + d.dx))); })
+        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+    var partition = d3.layout.partition()
+                             .value(function(d) { return d.count; });
+    var colors = d3.scale.category20c();
+    createchart(partition_data);
+
+    function createchart(root) {
+        var g = svg.selectAll("g")
+          .data(partition.nodes(root))
+          .enter().append("g");
+
+        var path = g.append("path")
+          .attr("d", arc)
+          .style("fill", function(d) { if (d.color){return taxonChroma.get(d.color)};return colors(d.name);})
+          .on("click", zoom);
+
+        var text = g.append("text")
+          .attr("x", function(d) { return y(d.y); })
+          .attr("transform", function(d) { return "rotate(" + rotateText(d) + ")"; })
+          .style("font-size", function(d) {return d.dx > 0.06 ? "1em" : "1rem";return "1em";})
+          .text(function(d) { var name = d.name;var twidth = (d.dy*width/2)/7;if(d.name.length >= twidth){name = d.name.substring(0, Math.ceil(twidth)) + "...";};if(d.count){return name + ':' + d.number};if(d.name){return name; }});
+    d3.select("#partition_display")
+          .on("click", function() { zoom(root); });
+    // Free code from Metmajer's Zoomable Sunburst Example MIT license
+        function zoom(d) {
+            text.attr("opacity", 0);
+            if (!d.children){ reset_all(); return};
+            path.transition()
+              .duration(350)
+              .attrTween("d", arcTween(d))
+              .each("end", function(e, i) {
+              // check if the animated element's data e lies within the visible angle span given in d
+                  if (e.x >= d.x && e.x < (d.x + d.dx)) {
+                      // get a selection of the associated text element
+                      var arcText = d3.select(this.parentNode).select("text");
+                      // fade in the text element and recalculate positions
+                      arcText.transition().duration(350)
+                          .attr("opacity", 1)
+                          .attr("transform", function() { return "rotate(" + rotateText(e) + ")" })
+                          .attr("x", function(d) { return y(d.y); })
+                          .text(function(d) { var name = d.name;var twidth = (d.depth * 5) + (d.dy*width/2)/7;if(d.name.length >= twidth){name = d.name.substring(0, Math.ceil(twidth)) + "...";};if(d.count){return name + ':' + d.number};if(d.name){return name; }});
+                  }
+              });
+            d3.event.stopPropagation();
+            //Controlls for table and figures
+            var searchstr = "";
+            var s = [];
+            global_domain_filter = {};
+            var table = $('#features-datatable').DataTable();
+            var chartI = dc.chartRegistry.list('histogramfeatures_group');
+            var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+            if (d.depth === 0){
+                reset_all();return
+            }
+            if (d.depth === 1){
+                for (var i=0;i<d.children.length;i++){
+                    var cstep = d.children[i]
+                    for (var j=0;j<cstep.children.length;j++){
+                        global_domain_filter[cstep.children[j].name] = 1;
+                        if (searchstr.length < 1){
+                            searchstr = '(' + cstep.children[j].name + ')[^\\S+]';
+                        } else {
+                            searchstr += '|(' + cstep.children[j].name + ')[^\\S+]';
+                        }
+                    }
+                }
+            }
+            if (d.depth === 2){
+                for (var i=0;i<d.children.length;i++){
+                    global_domain_filter[d.children[i].name] = 1;
+                    if (searchstr.length < 1){
+                        searchstr = '(' + d.children[i].name + ')[^\\S+]';
+                    } else {
+                        searchstr += '|(' + d.children[i].name + ')[^\\S+]';
+                    }
+                }
+            }
+            if (d.depth === 3){
+                searchstr = '(' + d.name + ')[^\\S+]';
+                global_domain_filter[d.name] = 1;
+            }
+            table.search(searchstr, 1, true, true).draw();
+            var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+            for (i=0;i<rows.length;i++){
+                s.push(rows[i][0]);
+            }
+            var len = s.length;
+            w = (len * 30) + left_margin + 60;
+            var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+            for (var i = 0;i<chartI.length; i++){
+                var count = 0;
+                chartI[i].width(w);
+                chartI[i].x(d3.scale.ordinal().domain(s));
+                for (var j=0;j<features_filter.length;j++){
+                    var key = features_filter[j];
+                    if (count === 0){
+                        chartI[i].group(histogram_filters[key], histogramSelection[key]);
+                    } else {
+                        chartI[i].stack(histogram_filters[key], histogramSelection[key]);
+                    }
+                    count++;
+                }
+                chartI[i].filter(null);
+            }
+            var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            for (var i = 0;i<chartJ.length; i++){
+                var count = 0;
+                chartJ[i].group(scatter_filters['group'])
+                    .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                    .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                    .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                    .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1));
+            }
+            table.rows('.selected').deselect();
+            dc.renderAll();
+        }
+    }
+    d3.select("#partition_display").style("height", height + "px");
+
+    function rotateText(d) {
+        return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+    }
+    // Free code from Metmajer's Zoomable Sunburst Example MIT license
+    // Interpolate the scales!
+    function arcTween(d) {
+        var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+            yd = d3.interpolate(y.domain(), [d.y, 1]),
+            yr = d3.interpolate(y.range(), [d.y ? 20 : 0, r]);
+        return function(d, i) {
+            return i
+                ? function(t) { return arc(d); }
+                : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+        };
+    }
+}
+
+    $("#reset-features").click(reset_all);
+
+    function reset_all(){
+        var d = partition_data;
+        var width = 1000,
+            height = 1000,
+            r = Math.min(width, height) / 2;
+
+        var x = d3.scale.linear()
+            .range([0, 2 * Math.PI]);
+
+        var y = d3.scale.linear()
+            .range([0, r]);
+
+        var table = $('#features-datatable').DataTable();
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+        table.rows('.selected').deselect();
+        table.search("").draw();
+        table.order([1, 'asc']).draw();
+        ordering = []
+        table.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+            var sampled = this.data()[0];
+            ordering.push(sampled);
+        });
+        var len = $("#features-datatable").dataTable()._('tr').length;
+        var w = len * 30 + left_margin + 60;
+        global_domain_filter = {};
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+        for (var i = 0;i<chartI.length; i++){
+            var count = 0;
+            chartI[i].width(w);
+            chartI[i].x(d3.scale.ordinal().domain(ordering));
+            for (var j=0;j<features_filter.length;j++){
+                var key = features_filter[j];
+                if (count === 0){
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
+                } else {
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
+                }
+                count++;
+            }
+            chartI[i].filter(null);
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            for (var i = 0;i<chartJ.length; i++){
+                var count = 0;
+                chartJ[i].group(scatter_filters['group'])
+                    .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                    .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                    .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                    .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1));
+                chartJ[i].filter(null);
+            }
+        dc.renderAll();
+        dc.redrawAll();
+        //table.ajax.reload();
+        //table.clear();
+        
+        //table.rows.add(feature_table_data).order([]).draw();
+    }
+
+    $('#display_sunburst').on('click', function(){
+        var svgs = d3.select('svg').remove();
+        sunburst_on = 1;
+        create_sunburst();
+    });
+
+    $('#display_icicle').on('click', function(){
+        var svgs = d3.select('svg').remove();
+        sunburst_on = 0;
+        create_icicle();
+    });
+
+    $('#origin_genus').on('click', function(){
+        partition_data = {'name' : 'Genus', 'children' : []};
+        var tmp_data = {};
+        for(var i=0;i<feature_table_data.length;i++){
+           var tmp_vals = feature_table_data[i];
+           var genus = tmp_vals[2];
+           var origin = tmp_vals[1];
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[7]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[9]}, {'count': 1, 'name': 'CDS', 'number': tmp_vals[10]}, {'count': 1, 'name': "3' UTR", 'number': tmp_vals[11]}, {'count': 1, 'name': "5' UTR", 'number': tmp_vals[12]}]};
+           if (genus in tmp_data){
+               if (origin in tmp_data[genus]){
+                   tmp_data[genus][origin].push(datum);
+               } else{
+                   tmp_data[genus][origin] = [datum];
+               }
+           } else {
+               tmp_data[genus] = {};
+               tmp_data[genus][origin] = [datum];
+           }
+        }
+        for (var k in tmp_data){
+            var g_ins = {'name' : k, 'children' : [], 'color' : k + ' 0'};
+            for (var y in tmp_data[k]){
+                var d_ins = {'name' : y, 'children' : tmp_data[k][y], 'color' : k + ' 1000'};
+                g_ins['children'].push(d_ins);
+            }
+            partition_data['children'].push(g_ins);
+        }
+        var ptitle = d3.select('#partition_title');
+        ptitle.text('Patition Display of Ontological Features by Genus')
+        var svgs = d3.select('svg').remove();
+        if(sunburst_on === 1){
+            create_sunburst();
+        } else {
+            create_icicle();
+        }
+    });
+    
+    $('#origin_db').on('click', function(){
+        partition_data = {'name' : 'Origin', 'children' : []};
+        var tmp_data = {};
+        for(var i=0;i<feature_table_data.length;i++){
+           var tmp_vals = feature_table_data[i];
+           var genus = tmp_vals[2];
+           var origin = tmp_vals[1];
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[7]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[9]}, {'count': 1, 'name': 'CDS', 'number': tmp_vals[10]}, {'count': 1, 'name': "3' UTR", 'number': tmp_vals[11]}, {'count': 1, 'name': "5' UTR", 'number': tmp_vals[12]}]};
+           if (origin in tmp_data){
+               if (genus in tmp_data[origin]){
+                   tmp_data[origin][genus].push(datum);
+               } else{
+                   tmp_data[origin][genus] = [datum];
+               }
+           } else {
+               tmp_data[origin] = {};
+               tmp_data[origin][genus] = [datum];
+           }
+        }
+        for (var k in tmp_data){
+            var d_ins = {'name' : k, 'children' : []};
+            for (var y in tmp_data[k]){
+                var g_ins = {'name' : y, 'children' : tmp_data[k][y], 'color' : y + ' 0'};
+                d_ins['children'].push(g_ins);
+            }
+            partition_data['children'].push(d_ins);
+        }
+        console.log('my datastructure ' + JSON.stringify(partition_data));
+        var ptitle = d3.select('#partition_title');
+        ptitle.text('Patition Display of Ontological Features by DB')
+        var svgs = d3.select('svg').remove();
+        if(sunburst_on === 1){
+            create_sunburst();
+        } else {
+            create_icicle();
+        }
+    });
+
+    $('#features-datatable tbody').on('click', 'tr', function(){
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var rows = $('#features-datatable').DataTable().rows('.selected').data();
+        var filtered_samples = organismFeatures.top(Infinity);
+        for (var j = 0;j<chartI.length; j++){
+            chartI[j].filter(null);
+            for (var i = 0;i<rows.length; i++){
+                chartI[j].filter(rows[i][0]);
+            }
+        }
+        dc.redrawAll();
+    });
+
+    $('#features-datatable thead').on('click', 'th', function(){
+        var s = [];
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+        for (var i = 0;i<rows.length;i++){
+            s.push(rows[i][0]);
+        }
+        for (var i = 0;i<chartI.length; i++){
+            chartI[i].x(d3.scale.ordinal().domain(s));
+        }
+        dc.redrawAll();
+    });
+
+    $("#features-datatable_filter input").on('keyup', function(k){
+        var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+        var s = [];
+        global_domain_filter = {};
+        for (var i = 0;i<rows.length;i++){
+            s.push(rows[i][0]);
+            global_domain_filter[rows[i][0]] = 1;
+        }
+        var len = rows.length;
+        w = (len * 30) + left_margin + 60;
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+        for (var i = 0;i<chartI.length; i++){
+            var count = 0;
+            chartI[i].width(w);
+            chartI[i].x(d3.scale.ordinal().domain(s));
+            for (var j=0;j<features_filter.length;j++){
+                var key = features_filter[j];
+                if (count === 0){
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
+                } else {
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
+                }
+                count++;
+            }
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        for (var i = 0;i<chartJ.length; i++){
+            chartJ[i].group(scatter_filters['group'])
+                .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
+        }
+        dc.renderAll();
+    });
+
+    $("#filter-features").on('click' , function(e){
+        var rows = $('#features-datatable').DataTable().rows('.selected').data();
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+        var table = $('#features-datatable').DataTable();
+        var s = [];
+        var r = {};
+        var searchstr = "";
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        global_domain_filter = {};
+        var len = rows.length;
+        w = (len * 30) + left_margin + 60;
+        if (rows.length === 0){
+            return 0;
+        }
+        for (var i=0;i<rows.length;i++){
+            s.push(rows[i][0]);
+            global_domain_filter[rows[i][0]] = 1;
+            if (searchstr.length < 1){
+                searchstr = '(' + rows[i][0] + ')[^\\S+]';
+            } else {
+                searchstr += '|(' + rows[i][0] + ')[^\\S+]';
+            }
+        }
+        table.search(searchstr, 1, true, true).draw();
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+        for (var i = 0;i<chartI.length; i++){
+            var count = 0;
+            chartI[i].width(w);
+            chartI[i].x(d3.scale.ordinal().domain(s));
+            for (var j=0;j<features_filter.length;j++){
+                var key = features_filter[j];
+                if (count === 0){
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
+                } else {
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
+                }
+                count++;
+            }
+            chartI[i].filter(null);
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        for (var i = 0;i<chartJ.length; i++){
+            chartJ[i].group(scatter_filters['group'])
+                .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
+        }
+        table.rows('.selected').deselect();
+        dc.renderAll();
+    });
+
+    $('button.customhistogram1').on('click', function(e){
+        var element = 'input.customhistogram-' + $(this).attr('id').split('-')[1];
+        var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+        var chartI = dc.chartRegistry.list('histogramfeatures_group');
+        var s = [];
+        global_domain_filter = {};
+        for (var i = 0;i<rows.length;i++){
+            s.push(rows[i][0]);
+            global_domain_filter[rows[i][0]] = 1;
+        }
+        var len = rows.length;
+        w = (len * 30) + left_margin + 60;
+        var histogram_filters = histogramFilters(organismFeatures, global_domain_filter);
+        for (var i = 0;i<chartI.length; i++){
+            var count = 0;
+            chartI[i].width(w);
+            chartI[i].x(d3.scale.ordinal().domain(s));
+            for (var j=0;j<features_filter.length;j++){
+                var key = features_filter[j];
+                if (count === 0){
+                    chartI[i].group(histogram_filters[key], histogramSelection[key]);
+                } else {
+                    chartI[i].stack(histogram_filters[key], histogramSelection[key]);
+                }
+                count++;
+            }
+        }
+       dc.renderAll();
+    });
+
+    $('button.customscatter1').on('click', function(e){
+        var element = 'input.customhistogram-' + $(this).attr('id').split('-')[1];
+        var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
+        var chartJ = dc.chartRegistry.list('scatterfeatures_group');
+        var s = [];
+        global_domain_filter = {};
+        for (var i = 0;i<rows.length;i++){
+            s.push(rows[i][0]);
+            global_domain_filter[rows[i][0]] = 1;
+        }
+        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        for (var i = 0;i<chartJ.length; i++){
+            var count = 0;
+            chartJ[i].group(scatter_filters['group'])
+                .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
+                .y(d3.scale.linear().domain([0, scatter_filters['ymax']]))
+                .xAxisLabel(scatx.charAt(0).toUpperCase() + scatx.slice(1))
+                .yAxisLabel(scaty.charAt(0).toUpperCase() + scaty.slice(1))
+        }
+        dc.renderAll();
+    });
+
+    $('input[type=checkbox]').change(function(){
+        var datum = $(this).attr('value');
+        var graph_class = $(this).attr('class').split('-')[0],
+            graph_number = $(this).attr('class').split('-')[1];
+        if (graph_class === 'customhistogram'){
+            if (this.checked){
+                var index = features_filter.indexOf(datum);
+                if (index !== -1){
+                    features_filter.splice(index, 1);
+                }
+                features_filter.push(datum);
+            } else {
+                var index = features_filter.indexOf(datum);
+                if (index !== -1){
+                    features_filter.splice(index, 1);
+                }
+            }
+        } else {
+            var graph_axis = graph_number.slice(-1);
+            var group = "input:checkbox[class='" + $(this).attr('class') + "']";
+            if (this.checked){
+                $(group).prop('checked', false);
+                $(this).prop('checked', true);
+            } else {
+                $(this).prop('checked', false);
+            }
+            if (graph_axis === 'x'){
+                scatx = datum;
+            } else {
+                scaty = datum;
+            }
+            console.log(scatx, scaty);
+        }
+        console.log('my filter ' + features_filter);
+    });
+
+    $('a.toggle-vis').on('click', function(e){
+        e.preventDefault();
+        var column = $("#features-datatable").DataTable().column(':contains(' + $(this).attr('data-column') + ')');
+        column.visible(! column.visible());
+        color_anchors($(this));
+    });
+
+//    $("button.popupLinkout").on('click', function(){
+    $("#features-datatable").on('click', '.popupLinkout', function(){
+        console.log('I clicked ' + this.innerHTML);
+        var element = this.value;
+        console.log(element);
+        var popup = document.getElementById(element);
+        console.log(popup, popup.classList);
+        if (popup.classList.contains('show')){
+            popup.classList.toggle('show');
+            return;
+        }
+        var testtext = linkoutCaller(this.innerHTML, function(err, data){
+            if (err){throw err;}
+            if (! data){
+                return;
+            }
+            console.log(data);
+            console.log('Completed request');
+            var popup = document.getElementById(element);
+            popup.classList.toggle('show');
+            console.log(popup, popup.innerHTML);
+            var newhtml = '<ul>';
+            var longest = 0;
+            for (var i=0;i<data.length;i++){
+                console.log(data[i].text);
+//                if (data[i].href.substring(0,2) === '//'){
+//                    data[i].href = 'http:' + data[i].href;
+//                }
+                if (data[i].text.length > longest){
+                    longest = data[i].text.length;
+                }
+                newhtml += '<li><a href=' + data[i].href + ' style="color:lightblue" target="_blank">' + data[i].text + '</a></li>\n';
+            }
+            popup.style.width = (longest *8 + 20) +"px";
+            popup.innerHTML = newhtml;
+        });
+    });
+});
+
+function linkoutCaller(target, done){
+    var oReq = new XMLHttpRequest();
+    console.log('my target ' + target);
+    //oReq.withCredentials = true;
+    oReq.open('GET', 'https://legumeinfo.org/gene_links/' + target + '/json', true);
+    //oReq.setRequestHeader('Access-Control-Allow-Origin', '*');
+    //oReq.setRequestHeader('Content-Type', 'text/html');
+    oReq.onload = function(){
+        done(null, JSON.parse(oReq.responseText));
+        //var DONE = 4;
+        //var OK = 200;
+        //if (oReq.readyState === DONE){
+        //    if (oReq.status === OK){
+        //        console.log(oReq.responseText);
+        //        return oReq.responseText;
+        //    } else {
+        //        console.log('Error on request: ' + oReq.status);
+        //    }
+        //}
+    }
+    oReq.onerror = function(){
+        done(oReq.response);
+    }
+    oReq.send();
+}
+
+function ancestors(node) {
+  var path = [];
+  var current = node;
+  while (current) {
+    path.unshift(current['name']);
+    current = current.parent;
+  }
+  return path;
+}
+
+function histogramFilters(c, f){
+        var genes_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.genes;
+                }
+            } else {
+                return d.genes;
+            }
+        });
+        var exons_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.exons;
+                }
+            } else {
+                return d.exons;
+            }
+        });
+        var mrnas_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.mrnas;
+                }
+            } else {
+                return d.mrnas;
+            }
+        });
+        var pps_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.pps;
+                }
+            } else {
+                return d.pps;
+            }
+        });
+        var ppds_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.ppds;
+                }
+            } else {
+                return d.ppds;
+            }
+        });
+        var chrs_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.chrs;
+                }
+            } else {
+                return d.chrs;
+            }
+        });
+        var lgs_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.lgs;
+                }
+            } else {
+                return d.lgs;
+            }
+        });
+        var cds_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.cds;
+                }
+            } else {
+                return d.cds;
+            }
+        });
+        var utr_3p_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['3p_utrs'];
+                }
+            } else {
+                return d['3p_utrs'];
+            }
+        });
+        var utr_5p_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['5p_utrs'];
+                }
+            } else {
+                return d['5p_utrs'];
+            }
+        });
+
+        var filters = {'genes' : genes_group,
+                           'exons' : exons_group,
+                           'mrnas' : mrnas_group,
+                           'pps'   : pps_group,
+                           'ppds'  : ppds_group,
+                           'chrs'  : chrs_group,
+                           'lgs'   : lgs_group,
+                           'cds'   : cds_group,
+                           '3p_utrs' : utr_3p_group,
+                           '5p_utrs' : utr_5p_group};
+        return filters;
+}
+
+function scatterFilters(c, f, x, y){
+    var xmax = 0
+    var ymax = 0
+    var scatdomain = c.dimension(
+        function(d){
+           return [d[x], d[y], d.label, d.org_genus, d.org_species];
+        });
+    var scatgroup = scatdomain.group(function(d){
+        if (Object.keys(f).length > 0){
+            if (f[d[2]]){
+                if (d[0] > xmax){
+                    xmax = d[0]
+                }
+                if (d[1] > ymax){
+                    ymax = d[1]
+                }
+                return [d[0], d[1], d[2], d[3], d[4]];
+            }
+        } else {
+            if (d[0] > xmax){
+                xmax = d[0]
+            }
+            if (d[1] > ymax){
+                ymax = d[1]
+            }
+            return [d[0], d[1], d[2], d[3], d[4]];
+        }
+    });
+    xmax = xmax + Math.floor(xmax/5);
+    ymax = ymax + Math.floor(ymax/10);
+    scatfilters = {'dimension' : scatdomain, 'group' : scatgroup, 'xmax' : xmax, 'ymax' : ymax};
+    return scatfilters;
+}
+    </script>
+</html>

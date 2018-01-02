@@ -1,4 +1,5 @@
 from dscensor import app, session, g, render_template
+from flask import render_template_string, make_response
 from api import help
 
 @app.route('/')
@@ -29,4 +30,8 @@ def medicago_metrics():
 
 @app.route('/DSCensor_neo4j')
 def dscensor_neo4j():
-    return app.neo4j_example
+#    response = make_response(render_template_string(app.neo4j_example))
+#    response.headers['Access-Control-Allow-Origin'] =  '*'
+    response = render_template('templating/templates/test_me_linkout.html',
+                               static_path='/static')
+    return response
