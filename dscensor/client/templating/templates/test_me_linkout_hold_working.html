@@ -65,11 +65,40 @@
         bottom: 125%;
         left: 50%;
         margin-left: -80px;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        -moz-box-shadow: 16px 16px 32px #000;
+        -webkit-box-shadow: 16px 16px 32px #000;
     }
     .popup .show {
         visibility: visible;
         -webkit-animation: fadeIn 1s;
         animation: fadeIn 1s
+    }
+    .closepopup {
+        background: #555;
+        color: lightblue;
+        border-color: white;
+        border-width: thin;
+        border-style: solid;
+        line-height: 20px;
+        position: absolute;
+        right: 15px;
+        text-align: center;
+        top: 10px;
+        width: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1em;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        -moz-box-shadow: 2px 2px 3px #000;
+        -webkit-box-shadow: 2px 2px 3px #000;
+    }
+    .textright {
+        float: right;
     }
     @-webkit-keyframes fadeIn {
         from {opacity: 0;} 
@@ -583,6 +612,13 @@ function create_sunburst(){
 
     function reset_all(){
         var d = partition_data;
+        console.log('resetting...')
+        var svgs = d3.select('svg').remove();
+        if (sunburst_on === 1){
+            create_sunburst();
+        } else {
+            create_icicle();
+        }
         var width = 1000,
             height = 1000,
             r = Math.min(width, height) / 2;
@@ -961,7 +997,7 @@ function create_sunburst(){
             var popup = document.getElementById(element);
             popup.classList.toggle('show');
             console.log(popup, popup.innerHTML);
-            var newhtml = '<ul>';
+            var newhtml = '<a class="textright closepopup" value="' + element + '">X</a><ul>';
             var longest = 0;
             for (var i=0;i<data.length;i++){
                 console.log(data[i].text);
@@ -976,6 +1012,11 @@ function create_sunburst(){
             popup.style.width = (longest *8 + 20) +"px";
             popup.innerHTML = newhtml;
         });
+    });
+    $("#features-datatable").on('click', '.closepopup', function(){
+        var closeme = this.getAttribute('value');
+        var popup = document.getElementById(closeme);
+        popup.classList.toggle('show');
     });
 });
 
