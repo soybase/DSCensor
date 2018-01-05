@@ -44,14 +44,24 @@ def format_data(r):
     origin = r['origin']
     org_infra = r.get('infraspecies', 'N/A')
     org_cname = r.get('common_name', 'N/A')
-    data = {'label' : label, 'origin' : origin,
+    linkout = r.get('linkout_example', False)
+    if not linkout:
+        linkout = 'N/A'
+    else:
+        linkout = '<button class=popupLinks>{}</button>'.format(linkout)
+#    data = {'label' : label, 'origin' : origin,
+#             'org_infra' : org_infra, 'org_genus' : org_genus,
+#             'org_species' : org_species, 'org_cname' : org_cname,
+#             'chrs' : 0, 'scaffolds' : 0, 'lgs' : 0, 'gms' : 0,
+#             'qtls' : 0, 'syn_regs' : 0, 'con_regs' : 0,
+#             'primers' : 0, '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
+#             'genes' : 0, 'mrnas' : 0, 'exons' : 0, 'pps' : 0,
+#             'ppds' : 0, 'hmms' : 0, 'prot_matches' : 0}
+    data = {'label' : label, 'origin' : origin, 'linkout_example' : linkout,
              'org_infra' : org_infra, 'org_genus' : org_genus,
              'org_species' : org_species, 'org_cname' : org_cname,
-             'chrs' : 0, 'scaffolds' : 0, 'lgs' : 0, 'gms' : 0,
-             'qtls' : 0, 'syn_regs' : 0, 'con_regs' : 0,
-             'primers' : 0, '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
-             'genes' : 0, 'mrnas' : 0, 'exons' : 0, 'pps' : 0,
-             'ppds' : 0, 'hmms' : 0, 'prot_matches' : 0}
+             '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
+             'genes' : 0, 'mrnas' : 0, 'exons' : 0}
     if not r.get('gene', None):
         logger.error('gene required to present object {}... continuing'.format(
                                                                         label))
@@ -77,15 +87,21 @@ def format_data(r):
 def dscensor_neo4j_test():
     run_dir = os.path.dirname(os.path.realpath(__file__))
     data = {
+#            'header' : ['Unique Label', 'Origin',
+#                        'Genus', 'Species', 'infraspecies',
+#                        'Common Name',
+#                        'Chromosomes', 'Super Contigs',
+#                        'Linkage Groups', 'Genetic Markers', 'QTLs',
+#                        'Syntenic Regions', 'Consensus Regions', 'Primers',
+#                        'Genes', 'mRNAs', 'Exons', 'Polypeptides', 'CDS',
+#                        "3' UTR", "5' UTR",
+#                        'Polypeptide Domains', 'HMM Matches', 'Protein Matches'
+#                       ],
             'header' : ['Unique Label', 'Origin',
                         'Genus', 'Species', 'infraspecies',
-                        'Common Name',
-                        'Chromosomes', 'Super Contigs',
-                        'Linkage Groups', 'Genetic Markers', 'QTLs',
-                        'Syntenic Regions', 'Consensus Regions', 'Primers',
-                        'Genes', 'mRNAs', 'Exons', 'Polypeptides', 'CDS',
-                        "3' UTR", "5' UTR",
-                        'Polypeptide Domains', 'HMM Matches', 'Protein Matches'
+                        'Common Name', 'Linkout Example',
+                        'Genes', 'mRNAs', 'Exons', 'CDS',
+                        "3' UTR", "5' UTR"
                        ],
             'counts' : {},
             'partition' : {'name' : 'Origin', 'children' : []},
@@ -213,15 +229,23 @@ def dscensor_neo4j_test():
                 p_o.append(
                        {'name' : label,
                         'color' : cstring,
+#                       'children' : [
+#                           {'name' : 'Genes', 'count' : 1, 'number' : c['genes']},
+#                           {'name' : 'mRNAs', 'count' : 1, 'number' : c['mrnas']},
+#                           {'name' : 'Exons', 'count' : 1, 'number' : c['exons']},
+#                           {'name' : 'Polypeptides', 'count' : 1, 'number' : c['pps']},
+#                           {'name' : 'LGs', 'count' : 1, 'number' : c['lgs']},
+#                           {'name' : 'Chromosomes', 'count' : 1, 'number' : c['chrs']},
+#                           {'name' : 'Genetic Markers', 'count' : 1, 'number' : c['gms']},
+#                           {'name' : 'Scaffolds', 'count' : 1, 'number' : c['scaffolds']}
+#                        ]
                         'children' : [
                             {'name' : 'Genes', 'count' : 1, 'number' : c['genes']},
                             {'name' : 'mRNAs', 'count' : 1, 'number' : c['mrnas']},
                             {'name' : 'Exons', 'count' : 1, 'number' : c['exons']},
-                            {'name' : 'Polypeptides', 'count' : 1, 'number' : c['pps']},
-                            {'name' : 'LGs', 'count' : 1, 'number' : c['lgs']},
-                            {'name' : 'Chromosomes', 'count' : 1, 'number' : c['chrs']},
-                            {'name' : 'Genetic Markers', 'count' : 1, 'number' : c['gms']},
-                            {'name' : 'Scaffolds', 'count' : 1, 'number' : c['scaffolds']}
+                            {'name' : 'CDS', 'count' : 1, 'number' : c['cds']},
+                            {'name' : "5' UTR", 'count' : 1, 'number' : c['5p_utrs']},
+                            {'name' : "3' UTR", 'count' : 1, 'number' : c['3p_utrs']},
                         ]
                        }
                 )
@@ -229,14 +253,19 @@ def dscensor_neo4j_test():
     ordered = []
     for d in counts:
         o = counts[d]
+#        datum = [o['label'], o['origin'],
+#                 o['org_genus'], o['org_species'], o['org_infra'], 
+#                 o['org_cname'], o['chrs'], o['scaffolds'],
+#                 o['lgs'], o['gms'], o['qtls'], o['syn_regs'],
+#                 o['con_regs'], o['primers'], o['genes'],
+#                 o['mrnas'], o['exons'], o['pps'], o['cds'],
+#                 o['5p_utrs'], o['3p_utrs'], o['ppds'],
+#                 o['hmms'], o['prot_matches']]
         datum = [o['label'], o['origin'],
                  o['org_genus'], o['org_species'], o['org_infra'], 
-                 o['org_cname'], o['chrs'], o['scaffolds'],
-                 o['lgs'], o['gms'], o['qtls'], o['syn_regs'],
-                 o['con_regs'], o['primers'], o['genes'],
-                 o['mrnas'], o['exons'], o['pps'], o['cds'],
-                 o['5p_utrs'], o['3p_utrs'], o['ppds'],
-                 o['hmms'], o['prot_matches']]
+                 o['org_cname'], o['linkout_example'],
+                 o['genes'], o['mrnas'], o['exons'], o['cds'],
+                 o['5p_utrs'], o['3p_utrs']]
         data['table_data'].append(datum)
         ordered.append(o)
     header = [{'title' : h} for h in data['header']]

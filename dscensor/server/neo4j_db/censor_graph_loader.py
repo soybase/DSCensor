@@ -84,7 +84,7 @@ REPORT_STATS = {'N50', 'allbases', 'gapbases', 'gaps', 'contigs', 'scaffolds',
 
 def connect_neo4j():
     host = '//0.0.0.0'
-    port = 7688
+    port = 7687
     auth = 'neo4j'
     pswd = 'neo4j'
     bolt = 'bolt:{}:{}'.format(host, port)
