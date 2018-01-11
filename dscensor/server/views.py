@@ -35,3 +35,12 @@ def dscensor_neo4j():
     response = render_template('templating/templates/test_me_linkout.html',
                                static_path='/static')
     return response
+
+@app.route('/DSCensor_neo4j_dynamic')
+def dscensor_neo4j_dynamic():
+    response = make_response(render_template_string(app.neo4j_example))
+#    response.headers['Access-Control-Allow-Origin'] =  '*'
+#    response = render_template('templating/templates/test_me_linkout.html',
+#                               static_path='/static')
+    return response
+

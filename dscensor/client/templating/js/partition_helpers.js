@@ -1,3 +1,16 @@
+function linkoutCaller(target, done){
+    var oReq = new XMLHttpRequest();
+    console.log('my target ' + target);
+    oReq.open('GET', 'https://legumeinfo.org/gene_links/' + target + '/json', true);
+    oReq.onload = function(){
+        done(null, JSON.parse(oReq.responseText));
+    }
+    oReq.onerror = function(){
+        done(oReq.response);
+    }
+    oReq.send();
+}
+
 function ancestors(node) {
   var path = [];
   var current = node;
@@ -81,6 +94,24 @@ function histogramFilters(c, f){
                 return d.cds;
             }
         });
+        var utr_3p_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['3p_utrs'];
+                }
+            } else {
+                return d['3p_utrs'];
+            }
+        });
+        var utr_5p_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['5p_utrs'];
+                }
+            } else {
+                return d['5p_utrs'];
+            }
+        });
         var filters = {'genes' : genes_group,
                            'exons' : exons_group,
                            'mrnas' : mrnas_group,
@@ -88,7 +119,9 @@ function histogramFilters(c, f){
                            'ppds'  : ppds_group,
                            'chrs'  : chrs_group,
                            'lgs'   : lgs_group,
-                           'cds'   : cds_group};
+                           'cds'   : cds_group,
+                           '3p_utrs' : utr_3p_group,
+                           '5p_utrs' : utr_5p_group};
         return filters;
 }
 
