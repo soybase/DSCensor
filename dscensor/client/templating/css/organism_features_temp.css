@@ -25,3 +25,67 @@
         margin-top: 40px;
         font-size: 14px;
     }
+    .popup {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .popup .popupText {
+        visibility: hidden;
+        width: 600px;
+        background-color: #555;
+        color: #fff;
+        /*text-align: center;*/
+        border-radius: 6px;
+        padding: 10px 0;
+        padding-left: 15px;
+        padding-top: 15px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -80px;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        -moz-box-shadow: 16px 16px 32px #000;
+        -webkit-box-shadow: 16px 16px 32px #000;
+    }
+    .popup .show {
+        visibility: visible;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s
+    }
+    .closepopup {
+        background: #555;
+        color: lightblue;
+        border-color: white;
+        border-width: thin;
+        border-style: solid;
+        line-height: 20px;
+        position: absolute;
+        right: 15px;
+        text-align: center;
+        top: 10px;
+        width: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1em;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        -moz-box-shadow: 2px 2px 3px #000;
+        -webkit-box-shadow: 2px 2px 3px #000;
+    }
+    .textright {
+        float: right;
+    }
+    @-webkit-keyframes fadeIn {
+        from {opacity: 0;} 
+        to {opacity: 1;}
+    }
+    @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity:1 ;}
+    }
+

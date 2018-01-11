@@ -1,9 +1,15 @@
-var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions'};
+var page_type = 'gff';
+var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR"};
 var global_domain_filter = {};
-var features_filter = ['genes'];
 var sunburst_on = 1;
+var features_filter = ['genes'];
 var scatx = 'exons';
 var scaty = 'genes';
+if (page_type === 'fasta'){
+    features_filter = ['scaffolds'];
+    scatx = 'scaffolds';
+    scaty = 'contigs';
+}
 $(document).ready(function(){
     var acount = 0;
     var name_length = 0;
@@ -33,8 +39,8 @@ $(document).ready(function(){
         "select" : true,
         "order" : []
     });
-    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>Stack:</b> <label class="checkbox-inline">  <input type="checkbox" value="genes" class="customhistogram-1" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customhistogram-1">Exons    </label>    <label class="checkbox-inline" class="customhistogram-1">      <input type="checkbox" value="mrnas" class="customhistogram-1">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customhistogram-1">CDS    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="pps" class="customhistogram-1">Polypeptides    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="ppds" class="customhistogram-1">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="chrs" class="customhistogram-1">Chromosomes    </label>    <label class="checkbox-inline" class="customhistogram-1">    <input type="checkbox" value="lgs" class="customhistogram-1">Linkage Groups    </label>    <button id="filterhistogram-1" style="inline:block;position:relative;left:10px" class="customhistogram1">Render</button></div><li class="list-group-item"><span id="customHistogram-1"></span></li>');
-    $("#feature_body").append('<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>XAXIS:</b> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customscatter-1x">Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customscatter-1x" checked>Exons    </label>    <label class="checkbox-inline" class="customscatter-1x">      <input type="checkbox" value="mrnas" class="customscatter-1x">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customscatter-1x">CDS    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="pps" class="customscatter-1x">Polypeptides    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="ppds" class="customscatter-1x">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="chrs" class="customscatter-1x">Chromosomes    </label>    <label class="checkbox-inline" class="customscatter-1x">    <input type="checkbox" value="lgs" class="customscatter-1x">Linkage Groups    </label></div>    <div class="container" style="position:relative;left:-50px;padding-bottom:10px"> <b>YAXIS:</b> <label class="checkbox-inline">      <input type="checkbox" value="genes" class="customscatter-1y" checked>Genes    </label>    <label class="checkbox-inline">      <input type="checkbox" value="exons" class="customscatter-1y">Exons    </label>    <label class="checkbox-inline" class="customscatter-1y">      <input type="checkbox" value="mrnas" class="customscatter-1y">mRNAs    </label>    <label class="checkbox-inline">      <input type="checkbox" value="cds" class="customscatter-1y">CDS    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="pps" class="customscatter-1y">Polypeptides    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="ppds" class="customscatter-1y">Polypeptide Domains    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="chrs" class="customscatter-1y">Chromosomes    </label>    <label class="checkbox-inline" class="customscatter-1y">    <input type="checkbox" value="lgs" class="customscatter-1y">Linkage Groups    </label>    <button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div><li class="list-group-item"><span id="customScatter-1"></span></li>');
+    $("#feature_body").append(histogram_selector);
+    $("#feature_body").append(scatter_selector);
     var customHistogram1 = dc.barChart("#customHistogram-1");
     customHistogram1
         .width(w)
@@ -130,7 +136,7 @@ $(document).ready(function(){
 
 function create_icicle(){
     var dw = 1000,
-        dh = 800,
+        dh = 1000,
         x = d3.scale.linear().range([0, dw]),
         y = d3.scale.linear().range([0, dh]);
     var vis = d3.select('#partition_display').append('svg')
@@ -433,6 +439,12 @@ function create_sunburst(){
 
     function reset_all(){
         var d = partition_data;
+        var svgs = d3.select('svg').remove();
+        if (sunburst_on === 1){
+            create_sunburst();
+        } else {
+            create_icicle();
+        }
         var width = 1000,
             height = 1000,
             r = Math.min(width, height) / 2;
@@ -486,13 +498,15 @@ function create_sunburst(){
     $('#display_sunburst').on('click', function(){
         var svgs = d3.select('svg').remove();
         sunburst_on = 1;
-        create_sunburst();
+//        create_sunburst();
+        reset_all();
     });
 
     $('#display_icicle').on('click', function(){
         var svgs = d3.select('svg').remove();
         sunburst_on = 0;
-        create_icicle();
+//        create_icicle();
+        reset_all();
     });
 
     $('#origin_genus').on('click', function(){
@@ -502,7 +516,13 @@ function create_sunburst(){
            var tmp_vals = feature_table_data[i];
            var genus = tmp_vals[2];
            var origin = tmp_vals[1];
-           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[13]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[14]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[16]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children' : []}
+           var children = [];
+           for(var j=7;j<feature_table_data[i].length;j++){
+               console.log(feature_header[j]);
+               children.push({'count' : 1, 'name' : feature_header[j]['title'], 'number' : tmp_vals[j]});
+           }
+           datum['children'] = children;
            if (genus in tmp_data){
                if (origin in tmp_data[genus]){
                    tmp_data[genus][origin].push(datum);
@@ -530,6 +550,7 @@ function create_sunburst(){
         } else {
             create_icicle();
         }
+        reset_all();
     });
     
     $('#origin_db').on('click', function(){
@@ -539,7 +560,13 @@ function create_sunburst(){
            var tmp_vals = feature_table_data[i];
            var genus = tmp_vals[2];
            var origin = tmp_vals[1];
-           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[13]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[14]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[16]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children' : []}
+           var children = [];
+           for(var j=7;j<feature_table_data[i].length;j++){
+               console.log(feature_header[j]);
+               children.push({'count' : 1, 'name' : feature_header[j]['title'], 'number' : tmp_vals[j]});
+           }
+           datum['children'] = children;
            if (origin in tmp_data){
                if (genus in tmp_data[origin]){
                    tmp_data[origin][genus].push(datum);
@@ -568,6 +595,7 @@ function create_sunburst(){
         } else {
             create_icicle();
         }
+        reset_all();
     });
 
     $('#features-datatable tbody').on('click', 'tr', function(){
@@ -780,6 +808,44 @@ function create_sunburst(){
         var column = $("#features-datatable").DataTable().column(':contains(' + $(this).attr('data-column') + ')');
         column.visible(! column.visible());
         color_anchors($(this));
+    });
+
+    $("#features-datatable").on('click', '.popupLinkout', function(){
+        console.log('I clicked ' + this.innerHTML);
+        var element = this.value;
+        console.log(element);
+        var popup = document.getElementById(element);
+        console.log(popup, popup.classList);
+        if (popup.classList.contains('show')){
+            popup.classList.toggle('show');
+            return;
+        }
+        var testtext = linkoutCaller(this.innerHTML, function(err, data){
+            if (err){throw err;}
+            if (! data){
+                return;
+            }
+            console.log(data);
+            console.log('Completed request');
+            var popup = document.getElementById(element);
+            popup.classList.toggle('show');
+            console.log(popup, popup.innerHTML);
+            var newhtml = '<a class="textright closepopup" value="' + element + '">X</a><ul>';
+            var longest = 0;
+            for (var i=0;i<data.length;i++){
+                if (data[i].text.length > longest){
+                    longest = data[i].text.length;
+                }
+                newhtml += '<li><a href=' + data[i].href + ' style="color:lightblue" target="_blank">' + data[i].text + '</a></li>\n';
+            }
+            popup.style.width = (longest *8 + 20) +"px";
+            popup.innerHTML = newhtml;
+        });
+    });
+    $("#features-datatable").on('click', '.closepopup', function(){
+        var closeme = this.getAttribute('value');
+        var popup = document.getElementById(closeme);
+        popup.classList.toggle('show');
     });
 });
 

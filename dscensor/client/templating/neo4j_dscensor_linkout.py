@@ -37,7 +37,7 @@ def connect_neo4j():
     return driver
 
 
-def format_data(r):
+def format_data(r, header):
     label = r['name']
     org_species = r['species']
     org_genus = r['genus']
@@ -47,23 +47,15 @@ def format_data(r):
     linkout = r.get('linkout_example', False)
     if not linkout:
         linkout = 'N/A'
+        if (label == 'medtr.A17_HM341.v4.0.gff3'): # REMOVE LATER
+            linkout = 1
     else:
         linkout = '<button class=popupLinks>{}</button>'.format(linkout)
-#    data = {'label' : label, 'origin' : origin,
-#             'org_infra' : org_infra, 'org_genus' : org_genus,
-#             'org_species' : org_species, 'org_cname' : org_cname,
-#             'chrs' : 0, 'scaffolds' : 0, 'lgs' : 0, 'gms' : 0,
-#             'qtls' : 0, 'syn_regs' : 0, 'con_regs' : 0,
-#             'primers' : 0, '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
-#             'genes' : 0, 'mrnas' : 0, 'exons' : 0, 'pps' : 0,
-#             'ppds' : 0, 'hmms' : 0, 'prot_matches' : 0}
     data = {'label' : label, 'origin' : origin, 'linkout_example' : linkout,
              'org_infra' : org_infra, 'org_genus' : org_genus,
-             'org_species' : org_species, 'org_cname' : org_cname,
-             '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
-             'genes' : 0, 'mrnas' : 0, 'exons' : 0}
-    if not r.get('gene', None):
-        logger.error('gene required to present object {}... continuing'.format(
+             'org_species' : org_species, 'org_cname' : org_cname}
+    if not (r.get('gene', None) or r.get('N50', None)):
+        logger.error('gene or N50 required to render {}... continuing'.format(
                                                                         label))
         return False
     for f in r:
@@ -71,21 +63,41 @@ def format_data(r):
 #        print f  #fill more of these in later
         if k == 'gene':
             data['genes'] = int(r[f])
+            header['Genes'] = 1
         elif k == 'mrna':
             data['mrnas'] = int(r[f])
+            header['mRNAs'] = 1
         elif k == 'five_prime_utr':
             data['5p_utrs'] = int(r[f])
+            header["5' UTRs"] = 1
         elif k == 'three_prime_utr':
             data['3p_utrs'] = int(r[f])
+            header["3' UTRs"] = 1
         elif k == 'cds':
             data['cds'] = int(r[f])
+            header['CDS'] = 1
         elif k == 'exon':
             data['exons'] = int(r[f])
+            header['Exons'] = 1
     return data
 
 
 def dscensor_neo4j_test():
     run_dir = os.path.dirname(os.path.realpath(__file__))
+    key_lookup = {'Genes' : 'genes', 'mRNAs' : 'mrnas', 'Exons' : 'exons',
+                  'CDS' : 'cds', "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs'}
+    header_lookup = {'Unique Label' : 'label', 'Origin' : 'origin',
+                     'Genus' : 'org_genus', 'Species' : 'org_species',
+                     'infraspecies' : 'org_infra', 'Common Name' : 'org_cname',
+                     'Linkout Example' : 'linkout_example', 'Genes' : 'genes',
+                     'mRNAs' : 'mrnas', 'Exons' : 'exons', 'CDS' : 'cds', 
+                     "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs'}
+    header_order = ['Unique Label', 'Origin', 'Genus', 'Species', 
+                    'infraspecies', 'Common Name', 'Linkout Example',
+                    'Genes', 'mRNAs', 'Exons', 'CDS', "3' UTR", "5' UTR"]
+    header_includes = {'Unique Label' : 1, 'Origin' : 1,
+                        'Genus' : 1, 'Species' : 1, 'infraspecies' : 1,
+                        'Common Name' : 1, 'Linkout Example' : 1}
     data = {
 #            'header' : ['Unique Label', 'Origin',
 #                        'Genus', 'Species', 'infraspecies',
@@ -97,19 +109,24 @@ def dscensor_neo4j_test():
 #                        "3' UTR", "5' UTR",
 #                        'Polypeptide Domains', 'HMM Matches', 'Protein Matches'
 #                       ],
-            'header' : ['Unique Label', 'Origin',
-                        'Genus', 'Species', 'infraspecies',
-                        'Common Name', 'Linkout Example',
-                        'Genes', 'mRNAs', 'Exons', 'CDS',
-                        "3' UTR", "5' UTR"
-                       ],
+            'header' : [],
+#                        'Unique Label', 'Origin',
+#                        'Genus', 'Species', 'infraspecies',
+#                        'Common Name', 'Linkout Example',
+#                        'Genes', 'mRNAs', 'Exons', 'CDS',
+#                        "3' UTR", "5' UTR"
+#                       ],
             'counts' : {},
             'partition' : {'name' : 'Origin', 'children' : []},
             'table_data' : [],
             'json_data' : '',
             'json_header' : '',
             'json_table_data' : '',
-            'json_partition_data' : ''
+            'json_partition_data' : '',
+            'hist_append' : '''<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>Stack:</b>''',
+            'scat_append_x' : '''<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>XAXIS:</b>''',
+            'scat_append_y' : '''<div class="container" style="position:relative;left:-50px;padding-bottom:10px"> <b>YAXIS:</b>''',
+            'scat_append' : ''
            }
     origins = {}
     check_me = {}
@@ -117,14 +134,29 @@ def dscensor_neo4j_test():
     counts = data['counts']
     driver = connect_neo4j()
     statement = 'match (a:gff) return a'
+    c = 0
     with driver.session() as session:
         for r in session.run(statement):
-            data_obj = format_data(r[0])
+            data_obj = format_data(r[0], header_includes)
             if not data_obj:
                 continue
             label = data_obj['label']
             origin = data_obj['origin']
             org_genus = data_obj['org_genus']
+            if data_obj['linkout_example'] != 'N/A':
+                c += 1
+                value = 'popuptext{}'.format(c)
+                if label == 'medtr.A17_HM341.v4.0.gff3':
+                    igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file=http://localhost:8889/data/medtr.A17_HM341.v4.0.gff3''' # change later to igv linkout from object
+                    example = 'medtr.Medtr2g020630'#data_obj['linkout_example']
+                    linkout = ("<div class='popup'><button value='" + value + 
+                               "' class='popupLinkout'>" + example + 
+                               "</button><span class='popupText' " + 
+                               "id='" + value + "'>test</span>" + 
+                               "<a href='" + igv  + "'>" + 
+                               "<button value='test_igv'>IGV</button>" + 
+                               "</a></div>")
+                    data_obj['linkout_example'] = linkout
             counts[label] = data_obj
             if origin not in origins:
                 origins[origin] = []
@@ -135,77 +167,8 @@ def dscensor_neo4j_test():
                 check_me[origin][org_genus] = 1
                 origins[origin].append(org_genus)
             genus[org_genus].append(data_obj)
-    #        print datum
-                        
-    #    sys.exit(1)
-    #    with open(metadata) as fopen:
-    #        counts = data['counts']
-    #        for line in fopen:
-    #            line = line.rstrip()
-    #            if line.startswith('#') or line.isspace() or not line:
-    #                continue
-    #            fields = line.split('\t')
-    #            try:
-    #                org_id = int(fields[0])
-    #            except:
-    #                org_id = fields[0]
-    #            org_genus = fields[1]
-    #            org_species = fields[2]
-    #            org_cname = fields[3]
-    #            count = int(fields[4])
-    #            ftype = fields[6]
-    #            origin = fields[7]
-    #            label = '{}_{}_{}_{}'.format(origin, org_genus, org_species, org_id)
-    #            if label not in counts:
-    #                datum = {'label' : label, 'origin' : origin,
-    #                         'org_id' : org_id, 'org_genus' : org_genus,
-    #                         'org_species' : org_species, 'org_cname' : org_cname,
-    #                         'chrs' : 0, 'scaffolds' : 0, 'lgs' : 0, 'gms' : 0,
-    #                         'qtls' : 0, 'syn_regs' : 0, 'con_regs' : 0, 
-    #                         'primers' : 0,
-    #                         'genes' : 0, 'mrnas' : 0, 'exons' : 0, 'pps' : 0,
-    #                         'ppds' : 0, 'hmms' : 0, 'prot_matches' : 0}
-    #                if origin not in origins:
-    #                    origins[origin] = []
-    #                    check_me[origin] = {}
-    #                if org_genus not in genus:
-    #                    genus[org_genus] = []
-    #                if org_genus not in check_me[origin]:
-    #                    check_me[origin][org_genus] = 1
-    #                    origins[origin].append(org_genus)
-    #                genus[org_genus].append(datum)
-    #                counts[label] = datum
-    #            if ftype == 'chromosome':
-    #                counts[label]['chrs'] = count
-    #            elif ftype == 'consensus_region':
-    #                counts[label]['con_regs'] = count
-    #            elif ftype == 'exon':
-    #                counts[label]['exons'] = count
-    #            elif ftype == 'gene':
-    #                counts[label]['genes'] = count
-    #            elif ftype == 'genetic_marker':
-    #                counts[label]['gms'] = count
-    #            elif ftype == 'linkage_group':
-    #                counts[label]['lgs'] = count
-    #            elif ftype == 'mRNA':
-    #                counts[label]['mrnas'] = count
-    #            elif ftype == 'polypeptide':
-    #                counts[label]['pps'] = count
-    #            elif ftype == 'polypeptide_domain':
-    #                counts[label]['ppds'] = count
-    #            elif ftype == 'primer':
-    #                counts[label]['primers'] = count
-    #            elif ftype == 'protein_hmm_match':
-    #                counts[label]['hmms'] = count
-    #            elif ftype == 'protein_match':
-    #                counts[label]['prot_matches'] = count
-    #            elif ftype == 'QTL':
-    #                counts[label]['qtls'] = count
-    #            elif ftype == 'supercontig':
-    #                counts[label]['scaffolds'] = count
-    #            elif ftype == 'syntenic_region':
-    #                counts[label]['syn_regs'] = count
-    #            last = label
+    for h in header_order:
+        data['header'].append(h)
     partition = data['partition']['children']
     count = 0
     for o in origins:
@@ -226,46 +189,23 @@ def dscensor_neo4j_test():
                 org_species = c['org_species']
                 label = c['label']
                 cstring = '{} {}'.format(org_genus, org_species)
+                children = []
+                for h in data['header'][7:]:
+                    if not c.get(header_lookup[h]):
+                        c[header_lookup[h]] = 0
+                    children.append({'name' : h, 'count' : 1, 
+                                     'number' : c[header_lookup[h]]})
                 p_o.append(
                        {'name' : label,
                         'color' : cstring,
-#                       'children' : [
-#                           {'name' : 'Genes', 'count' : 1, 'number' : c['genes']},
-#                           {'name' : 'mRNAs', 'count' : 1, 'number' : c['mrnas']},
-#                           {'name' : 'Exons', 'count' : 1, 'number' : c['exons']},
-#                           {'name' : 'Polypeptides', 'count' : 1, 'number' : c['pps']},
-#                           {'name' : 'LGs', 'count' : 1, 'number' : c['lgs']},
-#                           {'name' : 'Chromosomes', 'count' : 1, 'number' : c['chrs']},
-#                           {'name' : 'Genetic Markers', 'count' : 1, 'number' : c['gms']},
-#                           {'name' : 'Scaffolds', 'count' : 1, 'number' : c['scaffolds']}
-#                        ]
-                        'children' : [
-                            {'name' : 'Genes', 'count' : 1, 'number' : c['genes']},
-                            {'name' : 'mRNAs', 'count' : 1, 'number' : c['mrnas']},
-                            {'name' : 'Exons', 'count' : 1, 'number' : c['exons']},
-                            {'name' : 'CDS', 'count' : 1, 'number' : c['cds']},
-                            {'name' : "5' UTR", 'count' : 1, 'number' : c['5p_utrs']},
-                            {'name' : "3' UTR", 'count' : 1, 'number' : c['3p_utrs']},
-                        ]
+                        'children' : children
                        }
                 )
         count += 1
     ordered = []
     for d in counts:
         o = counts[d]
-#        datum = [o['label'], o['origin'],
-#                 o['org_genus'], o['org_species'], o['org_infra'], 
-#                 o['org_cname'], o['chrs'], o['scaffolds'],
-#                 o['lgs'], o['gms'], o['qtls'], o['syn_regs'],
-#                 o['con_regs'], o['primers'], o['genes'],
-#                 o['mrnas'], o['exons'], o['pps'], o['cds'],
-#                 o['5p_utrs'], o['3p_utrs'], o['ppds'],
-#                 o['hmms'], o['prot_matches']]
-        datum = [o['label'], o['origin'],
-                 o['org_genus'], o['org_species'], o['org_infra'], 
-                 o['org_cname'], o['linkout_example'],
-                 o['genes'], o['mrnas'], o['exons'], o['cds'],
-                 o['5p_utrs'], o['3p_utrs']]
+        datum = [o[header_lookup[h]] for h in data['header']]
         data['table_data'].append(datum)
         ordered.append(o)
     header = [{'title' : h} for h in data['header']]
@@ -277,6 +217,37 @@ def dscensor_neo4j_test():
 #    print json_data
 #    print json_table_data
     data['json_header'] = json_header
+    count = 1
+    for h in header[7:]:
+        name = h['title']
+        value = key_lookup.get(name)
+        name = name.replace("'", '&#39;')
+        data['hist_append'] += ('''<label class="checkbox-inline">''' + 
+             '''<input type="checkbox" value="''' + value + '"')
+        if value == 'genes':
+             data['hist_append'] += ''' class="customhistogram-1" checked>''' + name + '''</label>'''
+        else:
+             data['hist_append'] += ''' class="customhistogram-1">''' + name + '''</label>'''
+        data['scat_append_x'] += ('''<label class="checkbox-inline">''' +
+             '''<input type="checkbox" value="''' + value + '"')
+        if value == 'exons':
+             data['scat_append_x'] += ''' class="customscatter-1x" checked>''' + name + '''</label>'''
+        else:
+             data['scat_append_x'] += ''' class="customscatter-1x">''' + name + '''</label>'''
+        data['scat_append_y'] += ('''<label class="checkbox-inline">''' +
+             '''<input type="checkbox" value="''' + value + '"')
+        if value == 'genes':
+             data['scat_append_y'] += ''' class="customscatter-1y" checked>''' + name + '''</label>'''
+        else:
+             data['scat_append_y'] += ''' class="customscatter-1y">''' + name + '''</label>'''
+    data['hist_append'] += '''<button id="filterhistogram-1" style="inline:block;position:relative;left:10px" class="customhistogram1">Render</button></div><li class="list-group-item"><span id="customHistogram-1"></span></li>'''
+    data['scat_append_x'] += '''</div>'''
+    data['scat_append_y'] += '''</div>'''
+    data['scat_append'] = (data['scat_append_x'] + data['scat_append_y'] +
+                           '''<button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div><li class="list-group-item"><span id="customScatter-1"></span></li>''')
+#    print data['scat_append']
+#    print data['hist_append']
+        
     data['json_data'] = json_data
     data['json_table_data'] = json_table_data
     data['json_partition_data'] = json_partition_data
