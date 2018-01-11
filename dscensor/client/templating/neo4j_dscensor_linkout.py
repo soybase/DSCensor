@@ -51,19 +51,9 @@ def format_data(r, header):
             linkout = 1
     else:
         linkout = '<button class=popupLinks>{}</button>'.format(linkout)
-#    data = {'label' : label, 'origin' : origin,
-#             'org_infra' : org_infra, 'org_genus' : org_genus,
-#             'org_species' : org_species, 'org_cname' : org_cname,
-#             'chrs' : 0, 'scaffolds' : 0, 'lgs' : 0, 'gms' : 0,
-#             'qtls' : 0, 'syn_regs' : 0, 'con_regs' : 0,
-#             'primers' : 0, '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
-#             'genes' : 0, 'mrnas' : 0, 'exons' : 0, 'pps' : 0,
-#             'ppds' : 0, 'hmms' : 0, 'prot_matches' : 0}
     data = {'label' : label, 'origin' : origin, 'linkout_example' : linkout,
              'org_infra' : org_infra, 'org_genus' : org_genus,
              'org_species' : org_species, 'org_cname' : org_cname}
-#             '5p_utrs' : 0, '3p_utrs' : 0, 'cds' : 0,
-#             'genes' : 0, 'mrnas' : 0, 'exons' : 0}
     if not (r.get('gene', None) or r.get('N50', None)):
         logger.error('gene or N50 required to render {}... continuing'.format(
                                                                         label))
@@ -208,14 +198,6 @@ def dscensor_neo4j_test():
                 p_o.append(
                        {'name' : label,
                         'color' : cstring,
-#                        'children' : [
-#                            {'name' : 'Genes', 'count' : 1, 'number' : c['genes']},
-#                            {'name' : 'mRNAs', 'count' : 1, 'number' : c['mrnas']},
-#                            {'name' : 'Exons', 'count' : 1, 'number' : c['exons']},
-#                            {'name' : 'CDS', 'count' : 1, 'number' : c['cds']},
-#                            {'name' : "5' UTR", 'count' : 1, 'number' : c['5p_utrs']},
-#                            {'name' : "3' UTR", 'count' : 1, 'number' : c['3p_utrs']},
-#                        ]
                         'children' : children
                        }
                 )
@@ -224,11 +206,6 @@ def dscensor_neo4j_test():
     for d in counts:
         o = counts[d]
         datum = [o[header_lookup[h]] for h in data['header']]
-        #datum = [o['label'], o['origin'],
-        #         o['org_genus'], o['org_species'], o['org_infra'], 
-        #         o['org_cname'], o['linkout_example'],
-        #         o['genes'], o['mrnas'], o['exons'], o['cds'],
-        #         o['5p_utrs'], o['3p_utrs']]
         data['table_data'].append(datum)
         ordered.append(o)
     header = [{'title' : h} for h in data['header']]

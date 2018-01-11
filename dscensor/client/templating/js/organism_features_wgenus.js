@@ -1,9 +1,15 @@
+var page_type = 'gff';
 var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR"};
 var global_domain_filter = {};
-var features_filter = ['genes'];
 var sunburst_on = 1;
+var features_filter = ['genes'];
 var scatx = 'exons';
 var scaty = 'genes';
+if (page_type === 'fasta'){
+    features_filter = ['scaffolds'];
+    scatx = 'scaffolds';
+    scaty = 'contigs';
+}
 $(document).ready(function(){
     var acount = 0;
     var name_length = 0;
@@ -492,13 +498,15 @@ function create_sunburst(){
     $('#display_sunburst').on('click', function(){
         var svgs = d3.select('svg').remove();
         sunburst_on = 1;
-        create_sunburst();
+//        create_sunburst();
+        reset_all();
     });
 
     $('#display_icicle').on('click', function(){
         var svgs = d3.select('svg').remove();
         sunburst_on = 0;
-        create_icicle();
+//        create_icicle();
+        reset_all();
     });
 
     $('#origin_genus').on('click', function(){
@@ -508,7 +516,13 @@ function create_sunburst(){
            var tmp_vals = feature_table_data[i];
            var genus = tmp_vals[2];
            var origin = tmp_vals[1];
-           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[13]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[14]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[16]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children' : []}
+           var children = [];
+           for(var j=7;j<feature_table_data[i].length;j++){
+               console.log(feature_header[j]);
+               children.push({'count' : 1, 'name' : feature_header[j]['title'], 'number' : tmp_vals[j]});
+           }
+           datum['children'] = children;
            if (genus in tmp_data){
                if (origin in tmp_data[genus]){
                    tmp_data[genus][origin].push(datum);
@@ -536,6 +550,7 @@ function create_sunburst(){
         } else {
             create_icicle();
         }
+        reset_all();
     });
     
     $('#origin_db').on('click', function(){
@@ -545,7 +560,13 @@ function create_sunburst(){
            var tmp_vals = feature_table_data[i];
            var genus = tmp_vals[2];
            var origin = tmp_vals[1];
-           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children': [{'count': 1, 'name': 'Genes', 'number': tmp_vals[13]}, {'count': 1, 'name': 'mRNAs', 'number': tmp_vals[14]}, {'count': 1, 'name': 'Exons', 'number': tmp_vals[15]}, {'count': 1, 'name': 'Polypeptides', 'number': tmp_vals[16]}, {'count': 1, 'name': 'LGs', 'number': tmp_vals[8]}, {'count': 1, 'name': 'Chromosomes', 'number': tmp_vals[6]}, {'count': 1, 'name': 'Genetic Markers', 'number': tmp_vals[9]}, {'count': 1, 'name': 'Scaffolds', 'number': tmp_vals[7]}]};
+           var datum = {'color' : tmp_vals[2]+ ' ' +tmp_vals[3], 'name': tmp_vals[0], 'children' : []}
+           var children = [];
+           for(var j=7;j<feature_table_data[i].length;j++){
+               console.log(feature_header[j]);
+               children.push({'count' : 1, 'name' : feature_header[j]['title'], 'number' : tmp_vals[j]});
+           }
+           datum['children'] = children;
            if (origin in tmp_data){
                if (genus in tmp_data[origin]){
                    tmp_data[origin][genus].push(datum);
@@ -574,6 +595,7 @@ function create_sunburst(){
         } else {
             create_icicle();
         }
+        reset_all();
     });
 
     $('#features-datatable tbody').on('click', 'tr', function(){
