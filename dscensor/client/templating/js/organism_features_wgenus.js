@@ -1,5 +1,4 @@
-var page_type = 'gff';
-var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR"};
+var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR", 'scaffolds' : 'Scaffolds', 'contigs' : 'Contigs', 'N50' : 'N50', 'allbases' : 'All Bases', 'gaps' : 'Gaps', 'gapbases' : 'Gap Bases', 'records' : 'Fasta Records'};
 var global_domain_filter = {};
 var sunburst_on = 1;
 var features_filter = ['genes'];
@@ -67,7 +66,7 @@ $(document).ready(function(){
         }
     }
     customHistogram1
-        .group(histogram_filters['genes'], histogramSelection['genes'])
+        .group(histogram_filters[features_filter[0]], histogramSelection[features_filter[0]])
         .transitionDuration(10)
         .legend((dc.legend().x(40).y(0).itemHeight(16).gap(4)))
         .elasticY(true)

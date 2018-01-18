@@ -112,6 +112,70 @@ function histogramFilters(c, f){
                 return d['5p_utrs'];
             }
         });
+        var scaffolds_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['scaffolds'];
+                }
+            } else {
+                return d['scaffolds'];
+            }
+        });
+        var contigs_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['contigs'];
+                }
+            } else {
+                return d['contigs'];
+            }
+        });
+        var N50_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['N50'];
+                }
+            } else {
+                return d['N50'];
+            }
+        });
+        var allbases_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['allbases'];
+                }
+            } else {
+                return d['allbases'];
+            }
+        });
+        var gaps_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['gaps'];
+                }
+            } else {
+                return d['gaps'];
+            }
+        });
+        var records_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['records'];
+                }
+            } else {
+                return d['records'];
+            }
+        });
+        var gapbases_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d['gapbases'];
+                }
+            } else {
+                return d['gapbases'];
+            }
+        });
+
         var filters = {'genes' : genes_group,
                            'exons' : exons_group,
                            'mrnas' : mrnas_group,
@@ -121,7 +185,14 @@ function histogramFilters(c, f){
                            'lgs'   : lgs_group,
                            'cds'   : cds_group,
                            '3p_utrs' : utr_3p_group,
-                           '5p_utrs' : utr_5p_group};
+                           '5p_utrs' : utr_5p_group,
+                           'scaffolds' : scaffolds_group,
+                           'contigs' : contigs_group,
+                           'N50' : N50_group,
+                           'allbases' : allbases_group,
+                           'gaps' : gaps_group,
+                           'records' : records_group,
+                           'gapbases' : gapbases_group};
         return filters;
 }
 

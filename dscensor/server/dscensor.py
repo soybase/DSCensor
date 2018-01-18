@@ -57,7 +57,7 @@ app.logger.addHandler(handler)
 # setup large example
 #app.large_example = generate_for_render.render_large_example()
 #app.dscensor_example = aggregate_dscensor_db.dscensor_test()
-app.neo4j_example = neo4j_dscensor_linkout.dscensor_neo4j_test()
+#app.neo4j_example = neo4j_dscensor_linkout.dscensor_neo4j_test()
 # imports which expect dscensor.app to exist:
 #from database import postgres_db_connect
 import views

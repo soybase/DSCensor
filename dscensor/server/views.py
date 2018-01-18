@@ -1,5 +1,6 @@
 from dscensor import app, session, g, render_template
 from flask import render_template_string, make_response
+from client.templating import neo4j_dscensor_linkout
 from api import help
 
 @app.route('/')
@@ -38,9 +39,19 @@ def dscensor_neo4j():
 
 @app.route('/DSCensor_neo4j_dynamic')
 def dscensor_neo4j_dynamic():
-    response = make_response(render_template_string(app.neo4j_example))
+#    response = make_response(render_template_string(app.neo4j_example))
+    response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test('gff')))
 #    response.headers['Access-Control-Allow-Origin'] =  '*'
 #    response = render_template('templating/templates/test_me_linkout.html',
 #                               static_path='/static')
     return response
 
+
+@app.route('/DSCensor_neo4j_dynamic_fa')
+def dscensor_neo4j_dynamic_fa():
+#    response = make_response(render_template_string(app.neo4j_example))
+    response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test('fasta')))
+#    response.headers['Access-Control-Allow-Origin'] =  '*'
+#    response = render_template('templating/templates/test_me_linkout.html',
+#                               static_path='/static')
+    return response
