@@ -47,7 +47,7 @@ def format_data(r, header):
     linkout = r.get('linkout_example', False)
     if not linkout:
         linkout = 'N/A'
-        if (label == 'medtr.A17_HM341.v4.0.gff3'): # REMOVE LATER
+        if (label == 'medtr.A17_HM341.v4.0.gff3' or label == 'medtr.A17_HM341.v4.0.genome.fa'): # REMOVE LATER
             linkout = 1
     else:
         linkout = '<button class=popupLinks>{}</button>'.format(linkout)
@@ -69,32 +69,61 @@ def format_data(r, header):
             header['mRNAs'] = 1
         elif k == 'five_prime_utr':
             data['5p_utrs'] = int(r[f])
-            header["5' UTRs"] = 1
+            header["5' UTR"] = 1
         elif k == 'three_prime_utr':
             data['3p_utrs'] = int(r[f])
-            header["3' UTRs"] = 1
+            header["3' UTR"] = 1
         elif k == 'cds':
             data['cds'] = int(r[f])
             header['CDS'] = 1
         elif k == 'exon':
             data['exons'] = int(r[f])
             header['Exons'] = 1
+        elif k == 'scaffolds':
+            data['scaffolds'] = int(r[f])
+            header['Scaffolds'] = 1
+        elif k == 'contigs':
+            data['contigs'] = int(r[f])
+            header['Contigs'] = 1
+        elif k == 'n50':
+            data['N50'] = int(r[f])
+            header['N50'] = 1
+        elif k == 'allbases':
+            data['allbases'] = int(r[f])
+            header["Bases"] = 1
+        elif k == 'gaps':
+            data['gaps'] = int(r[f])
+            header["Gaps"] = 1
+        elif k == 'gapbases':
+            data['gapbases'] = int(r[f])
+            header["Gap Bases"] = 1
+        elif k == 'records':
+            data['records'] = int(r[f])
+            header["Fasta Records"] = 1
     return data
 
 
-def dscensor_neo4j_test():
+def dscensor_neo4j_test(ftype):
     run_dir = os.path.dirname(os.path.realpath(__file__))
     key_lookup = {'Genes' : 'genes', 'mRNAs' : 'mrnas', 'Exons' : 'exons',
-                  'CDS' : 'cds', "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs'}
+                  'CDS' : 'cds', "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs',
+                  'Scaffolds' : 'scaffolds', 'Contigs' : 'contigs',
+                  'N50' : 'N50', 'Bases' : 'allbases', 'Gaps' : 'gaps',
+                  'Gap Bases' : 'gapbases', 'Fasta Records' : 'records'}
     header_lookup = {'Unique Label' : 'label', 'Origin' : 'origin',
                      'Genus' : 'org_genus', 'Species' : 'org_species',
                      'infraspecies' : 'org_infra', 'Common Name' : 'org_cname',
                      'Linkout Example' : 'linkout_example', 'Genes' : 'genes',
                      'mRNAs' : 'mrnas', 'Exons' : 'exons', 'CDS' : 'cds', 
-                     "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs'}
+                     "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs',
+                     'Scaffolds' : 'scaffolds', 'Contigs' : 'contigs',
+                     'N50' : 'N50', 'Bases' : 'allbases', 'Gaps' : 'gaps',
+                     'Gap Bases' : 'gapbases', 'Fasta Records' : 'records'}
     header_order = ['Unique Label', 'Origin', 'Genus', 'Species', 
                     'infraspecies', 'Common Name', 'Linkout Example',
-                    'Genes', 'mRNAs', 'Exons', 'CDS', "3' UTR", "5' UTR"]
+                    'Genes', 'mRNAs', 'Exons', 'CDS', "3' UTR", "5' UTR",
+                    'Fasta Records', 'Contigs', 'Scaffolds', 'N50', 'Bases', 
+                    'Gaps', 'Gap Bases']
     header_includes = {'Unique Label' : 1, 'Origin' : 1,
                         'Genus' : 1, 'Species' : 1, 'infraspecies' : 1,
                         'Common Name' : 1, 'Linkout Example' : 1}
@@ -109,6 +138,7 @@ def dscensor_neo4j_test():
 #                        "3' UTR", "5' UTR",
 #                        'Polypeptide Domains', 'HMM Matches', 'Protein Matches'
 #                       ],
+            'ftype' : ftype,
             'header' : [],
 #                        'Unique Label', 'Origin',
 #                        'Genus', 'Species', 'infraspecies',
@@ -133,7 +163,11 @@ def dscensor_neo4j_test():
     genus = {}
     counts = data['counts']
     driver = connect_neo4j()
-    statement = 'match (a:gff) return a'
+    statement = ''
+    if ftype == 'gff':
+        statement = 'match (a:gff) return a'
+    else:
+        statement = 'match (a:fasta) return a'
     c = 0
     with driver.session() as session:
         for r in session.run(statement):
@@ -146,8 +180,12 @@ def dscensor_neo4j_test():
             if data_obj['linkout_example'] != 'N/A':
                 c += 1
                 value = 'popuptext{}'.format(c)
-                if label == 'medtr.A17_HM341.v4.0.gff3':
-                    igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file=http://localhost:8889/data/medtr.A17_HM341.v4.0.gff3''' # change later to igv linkout from object
+                igv = ''
+                if label == 'medtr.A17_HM341.v4.0.gff3' or label == 'medtr.A17_HM341.v4.0.genome.fa': #remove this when i link actual file objects to nodes
+                    if label == 'medtr.A17_HM341.v4.0.gff3':
+                        igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file=http://localhost:8889/data/medtr.A17_HM341.v4.0.gff3''' # change later to igv linkout from object
+                    if label == 'medtr.A17_HM341.v4.0.genome.fa':
+                        igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file='''
                     example = 'medtr.Medtr2g020630'#data_obj['linkout_example']
                     linkout = ("<div class='popup'><button value='" + value + 
                                "' class='popupLinkout'>" + example + 
@@ -168,7 +206,8 @@ def dscensor_neo4j_test():
                 origins[origin].append(org_genus)
             genus[org_genus].append(data_obj)
     for h in header_order:
-        data['header'].append(h)
+        if header_includes.get(h, None):
+            data['header'].append(h)
     partition = data['partition']['children']
     count = 0
     for o in origins:
@@ -224,19 +263,19 @@ def dscensor_neo4j_test():
         name = name.replace("'", '&#39;')
         data['hist_append'] += ('''<label class="checkbox-inline">''' + 
              '''<input type="checkbox" value="''' + value + '"')
-        if value == 'genes':
+        if value == 'genes' or value == 'scaffolds':
              data['hist_append'] += ''' class="customhistogram-1" checked>''' + name + '''</label>'''
         else:
              data['hist_append'] += ''' class="customhistogram-1">''' + name + '''</label>'''
         data['scat_append_x'] += ('''<label class="checkbox-inline">''' +
              '''<input type="checkbox" value="''' + value + '"')
-        if value == 'exons':
+        if value == 'exons' or value == 'scaffolds':
              data['scat_append_x'] += ''' class="customscatter-1x" checked>''' + name + '''</label>'''
         else:
              data['scat_append_x'] += ''' class="customscatter-1x">''' + name + '''</label>'''
         data['scat_append_y'] += ('''<label class="checkbox-inline">''' +
              '''<input type="checkbox" value="''' + value + '"')
-        if value == 'genes':
+        if value == 'genes' or value == 'contigs':
              data['scat_append_y'] += ''' class="customscatter-1y" checked>''' + name + '''</label>'''
         else:
              data['scat_append_y'] += ''' class="customscatter-1y">''' + name + '''</label>'''
@@ -261,6 +300,6 @@ def dscensor_neo4j_test():
 
 
 if __name__ == '__main__':
-    template = dscensor_neo4j_test()
+    template = dscensor_neo4j_test('fasta')
     print template
 
