@@ -130,7 +130,70 @@ $(document).ready(function(){
         });
     customScatter1.chartName = 'customScatter1';
     dc.chartRegistry.register(customScatter1, 'scatterfeatures_group');
-    customScatter1.brushOn(false);
+    customScatter1._brushing = function(){
+                                          var extent = customScatter1.extendBrush();
+                                          customScatter1.redrawBrush(customScatter1.g());
+                                          console.log('I am brushing ' + customScatter1);
+                                          var table = $('#features-datatable').DataTable();
+                                          var rows = $("#features-datatable").dataTable()._('tr');
+                                          var searchstr = '';
+                                          if(extent){
+                                            console.log(extent);
+                                          }
+                                          if (customScatter1.brushIsEmpty(extent)) {
+                                              dc.events.trigger(function () {
+                                                customScatter1.filter(null);
+                                                customHistogram1.filter(null);
+                                                customScatter1.redrawGroup();
+                                                table.rows('.selected').deselect();
+                                              });
+                                          }else{
+                                              var ranged2DFilter = dc.filters.RangedTwoDimensionalFilter(extent);
+                                              console.log(ranged2DFilter);
+                                              var xs = [ranged2DFilter[0][0], ranged2DFilter[1][0]];
+                                              var ys = [ranged2DFilter[0][1], ranged2DFilter[1][1]];
+                                              console.log(xs, ys);
+                                              var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+                                              console.log(scatter_filters);
+                                              var object_dim = scatter_filters['dimension'];
+                                              console.log(object_dim);
+                                              var object_names = [];
+                                              object_dim.filter(function(d){
+                                                  if (d[0] >= xs[0] && d[0] <= xs[1] && d[1] >= ys[0] && d[1] <= ys[1]){
+                                                      object_names.push(d[2]);
+                                                      console.log(d[2]);
+                                                  }
+                                                  return d;
+                                              });
+                                              object_dim.dispose();
+                                              dc.events.trigger(function () {
+                                                  customHistogram1.filter(null);
+                                                  for (var i=0;i<object_names.length;i++){
+                                                      console.log(object_names[i]);
+                                                      customHistogram1.filter(object_names[i]);
+                                                      customHistogram1.redrawGroup();
+                                                      for (var r = 0; r < rows.length; r++){
+                                                          console.log(rows[r][0], object_names[i]);
+                                                          if (rows[r][0] === object_names[i]){
+                                                            var indexes = table.rows().eq( 0 ).filter( function (rowIdx) {
+                                                                return table.cell( rowIdx, 0 ).data() === object_names[i] ? true : false;
+                                                            });
+                                                            console.log(indexes);
+                                                            console.log('table ' + table.rows(indexes).nodes().to$().hasClass('selected'));
+                                                            if (table.rows(indexes).nodes().to$().hasClass('selected') === false){
+                                                                console.log('firing selected');
+                                                                table.rows(indexes)
+                                                                     .nodes()
+                                                                     .to$()
+                                                                     .addClass('selected');
+                                                                console.log(rows[r], indexes);
+                                                            }
+                                                          }
+                                                      }
+                                                  }
+                                              }, dc.constants.EVENT_DELAY);
+                                      }
+                              }
     dc.renderAll();
     create_sunburst();
 
