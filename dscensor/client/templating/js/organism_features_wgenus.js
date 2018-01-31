@@ -130,6 +130,7 @@ $(document).ready(function(){
         });
     customScatter1.chartName = 'customScatter1';
     dc.chartRegistry.register(customScatter1, 'scatterfeatures_group');
+    customScatter1.brushOn(false);
     dc.renderAll();
     create_sunburst();
 
@@ -542,7 +543,7 @@ function create_sunburst(){
             partition_data['children'].push(g_ins);
         }
         var ptitle = d3.select('#partition_title');
-        ptitle.text('Patition Display of Ontological Features by Genus')
+        ptitle.text('Patition Display of Features by Genus')
         var svgs = d3.select('svg').remove();
         if(sunburst_on === 1){
             create_sunburst();
@@ -587,7 +588,7 @@ function create_sunburst(){
         }
         console.log('my datastructure ' + JSON.stringify(partition_data));
         var ptitle = d3.select('#partition_title');
-        ptitle.text('Patition Display of Ontological Features by DB')
+        ptitle.text('Patition Display of Features by DB')
         var svgs = d3.select('svg').remove();
         if(sunburst_on === 1){
             create_sunburst();
