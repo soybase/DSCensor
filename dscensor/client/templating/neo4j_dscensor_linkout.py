@@ -183,9 +183,9 @@ def dscensor_neo4j_test(ftype):
                 igv = ''
                 if label == 'medtr.A17_HM341.v4.0.gff3' or label == 'medtr.A17_HM341.v4.0.genome.fa': #remove this when i link actual file objects to nodes
                     if label == 'medtr.A17_HM341.v4.0.gff3':
-                        igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file=http://localhost:8889/data/medtr.A17_HM341.v4.0.gff3''' # change later to igv linkout from object
+                        igv = '''http://localhost:60151/load?genome=http://ctc-webservices:8889/data/medtr.A17_HM341.v4.0.genome.fa&file=http://neo4j_dscensor_linkout.py:8889/data/medtr.A17_HM341.v4.0.gff3''' # change later to igv linkout from object
                     if label == 'medtr.A17_HM341.v4.0.genome.fa':
-                        igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file='''
+                        igv = '''http://localhost:60151/load?genome=http://neo4j_dscensor_linkout.py:8889/data/medtr.A17_HM341.v4.0.genome.fa&file='''
                     example = 'medtr.Medtr2g020630'#data_obj['linkout_example']
                     linkout = ("<div class='popup'><button value='" + value + 
                                "' class='popupLinkout'>" + example + 
