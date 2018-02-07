@@ -1,7 +1,7 @@
 from dscensor import app, session, g, render_template
 from flask import render_template_string, make_response
 from client.templating import neo4j_dscensor_linkout
-from api import help
+from api import help, derived_from
 
 @app.route('/')
 def document_root():

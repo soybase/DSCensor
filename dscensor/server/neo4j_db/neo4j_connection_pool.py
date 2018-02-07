@@ -23,6 +23,6 @@ def get_session():
     try:
         session = driver.session()
         yield session
-    finally:
+    finally:  #if things go really wrong interpreter should handle... jic
         if session:
             session.close()
