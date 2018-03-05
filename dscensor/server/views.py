@@ -1,7 +1,7 @@
 from dscensor import app, session, g, render_template, request
 from flask import render_template_string, make_response, jsonify
 from neo4j_db import neo4j_connection_pool as cpool
-from client.templating import neo4j_dscensor_linkout
+from client.templating import neo4j_dscensor_linkout, igv_template
 from api import help, derived_from, visualize_paths
 
 logger = app.logger
@@ -67,7 +67,8 @@ def visualize_igv(filename):
        related data
     '''
     if request.method == 'GET':  # get fasta and then get all others
-        visualize_me = {}
+        data = {}
+        visualize_me = {'selection' : filename, 'data' : data}
         msg = ''
         count = 0
         msg += 'Searching for {}'.format(filename)
@@ -90,9 +91,11 @@ def visualize_igv(filename):
                     return_me.append(r[0].properties)
             if not return_me:  # wasn't fasta and no fasta were found not error
                 logger.error('No fasta found for {}'.format(filename))
-                return jsonify([]), 200  # return empty wasn't an error
+                return jsonify(visualize_me), 200  # return empty
             fasta = return_me[0]['name']  # this is dumb fix later
-            visualize_me['fasta'] = [fasta]  # set fasta for visualize
+            url = return_me[0]['url']
+            data['fasta'] = [{'filename': fasta,
+                              'url': url}]  # set fasta for visualize
             statement = 'MATCH p=(n {name:{filename}})<-[:DERIVED_FROM*1..]-(m) return distinct m'  # should be one line fix later get all files derived from fasta
             return_me = []
             seen = {}
@@ -107,13 +110,12 @@ def visualize_igv(filename):
                     logger.warning('No url for {} will not return'.format(
                                                                      filename))
                     continue
-                element = (filename, url)  # create visual tuple
                 if filename in seen:  # continue if already seen
                     continue
                 seen[filename] = 1
-                if filetype not in visualize_me:
-                    visualize_me[filetype] = []
-                visualize_me[filetype].append(element)
+                if filetype not in data:
+                    data[filetype] = []
+                data[filetype].append({'filename': filename, 'url' : url})
 #                return_me.append(r[0].properties)  # get dictionary
             statement = 'MATCH p=(n {name:{filename}})<-[:DERIVED_FROM*1..]-(m)-[:DERIVED_FROM]->(o) return distinct m, o'
             for r in session.run(statement, {'filename' : fasta}):
@@ -135,16 +137,15 @@ def visualize_igv(filename):
                     logger.warning('No url for {} will not return'.format(
                                                                    filename_o))
                     continue
-                element = (filename_o, url)  # create visual tuple
-                if filetype_o not in visualize_me:
-                    visualize_me[filetype_o] = []
-                visualize_me[filetype_o].append(element)
+                if filetype_o not in data:
+                    data[filetype_o] = []
+                data[filetype_o].append({'filename': filename_o, 'url' : url})
         # create template
-        return jsonify(visualize_me), 200
+#        return jsonify(visualize_me), 200
 #    response = make_response(render_template_string(app.neo4j_example))
-#    response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test('fasta')))
+    response = make_response(render_template_string(igv_template.render_igv(visualize_me)))
 #    response.headers['Access-Control-Allow-Origin'] =  '*'
 #    response = render_template('templating/templates/test_me_linkout.html',
 #                               static_path='/static')
-#    return response
+    return response
 
