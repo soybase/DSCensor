@@ -1,0 +1,70 @@
+{% macro igv_load(load_me) %}
+    <li class="list-group-item"><a href="http://localhost:60151/load?file={{ load_me['url']|e }}">{{ load_me['filename']|e }}</a></li>
+{% endmacro %}
+{% macro igv_genome(load_me) %}
+    <li class="list-group-item"><a href="http://localhost:60151/load?genome={{ load_me['url']|e }}">{{ load_me['filename']|e }}</a></li>
+{% endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ data.selection }} IGV Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.3.14/crossfilter.min.js"></script>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.0-beta.31/dc.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
+    <script src="https://rawgit.com/legumeinfo/lis-taxon-symbology/master/dist/bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.0-beta.31/dc.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+    {% if data.data %}
+        <h3>Selection {{ data.selection }}<h3>
+        {% if 'fasta' in data.data %}
+        <h4>Fasta Files<h4>
+            <ul class="list-group">
+            {% for d in data.data['fasta'] -%}
+                {{ igv_genome(d) }}    
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% if 'gff' in data.data %}
+        <h4>GFF Files</h4>
+            <ul class="list-group">
+            {% for d in data.data['gff'] -%}
+                {{ igv_load(d) }}
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% if 'vcf' in data.data %}
+        <h4>VCF Files</h4>
+            <ul class="list-group">
+            {% for d in data.data['vcf'] -%}
+                {{ igv_load(d) }}
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% for r in data.data -%}
+            {% if ( r != 'fasta') and ( r != 'gff') and (r != 'vcf') and (r != 'selection') %}
+                <h4>{{ r }} Files</h4>
+                <ul class="list-group">
+                {% for d in data.data[r] -%}
+                    {{ igv_load(d) }}
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h3>No Results Found</h3>
+    {% endif %}
+    </div>
+</body>
+{% block javascript %}{% endblock %}
+</html>

@@ -42,6 +42,7 @@ def format_data(r, header):
     org_species = r['species']
     org_genus = r['genus']
     origin = r['origin']
+    url = r.get('url')
     org_infra = r.get('infraspecies', 'N/A')
     org_cname = r.get('common_name', 'N/A')
     linkout = r.get('linkout_example', False)
@@ -53,7 +54,8 @@ def format_data(r, header):
         linkout = '<button class=popupLinks>{}</button>'.format(linkout)
     data = {'label' : label, 'origin' : origin, 'linkout_example' : linkout,
              'org_infra' : org_infra, 'org_genus' : org_genus,
-             'org_species' : org_species, 'org_cname' : org_cname}
+             'org_species' : org_species, 'org_cname' : org_cname,
+             'url' : url}
     if not (r.get('gene', None) or r.get('N50', None)):
         logger.error('gene or N50 required to render {}... continuing'.format(
                                                                         label))
@@ -177,24 +179,24 @@ def dscensor_neo4j_test(ftype):
             label = data_obj['label']
             origin = data_obj['origin']
             org_genus = data_obj['org_genus']
+            linkout = ''
             if data_obj['linkout_example'] != 'N/A':
                 c += 1
                 value = 'popuptext{}'.format(c)
-                igv = ''
+                igv = 'http://fisher.ncgr.org:50002/visualize-igv/{}'.format(label)
                 if label == 'medtr.A17_HM341.v4.0.gff3' or label == 'medtr.A17_HM341.v4.0.genome.fa': #remove this when i link actual file objects to nodes
-                    if label == 'medtr.A17_HM341.v4.0.gff3':
-                        igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file=http://localhost:8889/data/medtr.A17_HM341.v4.0.gff3''' # change later to igv linkout from object
-                    if label == 'medtr.A17_HM341.v4.0.genome.fa':
-                        igv = '''http://localhost:60151/load?genome=http://localhost:8889/data/medtr.A17_HM341.v4.0.genome.fa&file='''
                     example = 'medtr.Medtr2g020630'#data_obj['linkout_example']
                     linkout = ("<div class='popup'><button value='" + value + 
                                "' class='popupLinkout'>" + example + 
                                "</button><span class='popupText' " + 
-                               "id='" + value + "'>test</span>" + 
-                               "<a href='" + igv  + "'>" + 
-                               "<button value='test_igv'>IGV</button>" + 
-                               "</a></div>")
+                               "id='" + value + "'>test</span></div>")  
                     data_obj['linkout_example'] = linkout
+            if data_obj['url']:
+                igv = 'http://fisher.ncgr.org:50002/visualize-igv/{}'.format(label)
+                linkout += ("<a target='_blank' href='" + igv  + "'>" + 
+                            "<button value='test_igv'>IGV</button></a>")
+            if linkout:
+                data_obj['linkout_example'] = linkout
             counts[label] = data_obj
             if origin not in origins:
                 origins[origin] = []

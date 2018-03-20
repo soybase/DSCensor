@@ -21,15 +21,22 @@ MAXLOGFILES = 10
 app = Flask(__name__, template_folder='client')
 app.config.from_object(__name__)
 app.config.update(dict(
-    HOST='localhost',
-    DATABASE='dscensor_dev',
-    PORT=5432,
-    SECRET_KEY='this is some secret',
-    USERNAME='ctc',
-    PASSWORD='',
+    API_PATH='/api/v1',
+##POSTGRES
+#    HOST='localhost',
+#    DATABASE='dscensor_dev',
+#    PORT=5432,
+#    SECRET_KEY='this is some secret',
+#    USERNAME='ctc',
+#    PASSWORD='',
 #    JSONIFY_PRETTYPRINT_REGULAR=False,
-    API_PATH='/api/v1'
+##NEO4j
+    HOST = '//0.0.0.0',
+    PORT = 7687,
+    AUTH = 'neo4j',
+    PSWD = 'neo4j'
 ))
+
 
 # WILL FILL HERE FOR INITIAL DATA an api view will be required here to serve it
 
