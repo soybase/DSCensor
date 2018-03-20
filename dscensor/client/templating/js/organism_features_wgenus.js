@@ -9,6 +9,7 @@ if (page_type === 'fasta'){
     scatx = 'scaffolds';
     scaty = 'contigs';
 }
+var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
 $(document).ready(function(){
     var acount = 0;
     var name_length = 0;
@@ -107,7 +108,8 @@ $(document).ready(function(){
     customHistogram1.chartName = 'customHistogram1';
     dc.chartRegistry.register(customHistogram1, 'histogramfeatures_group');
     var customScatter1 = dc.scatterPlot("#customScatter-1")
-    var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+    scatter_filters['dimension'].dispose();
+    scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
     customScatter1
         .width(scatw)
         .height(600)
@@ -135,7 +137,8 @@ $(document).ready(function(){
                                           customScatter1.redrawBrush(customScatter1.g());
                                           console.log('I am brushing ' + customScatter1);
                                           var table = $('#features-datatable').DataTable();
-                                          var rows = $("#features-datatable").dataTable()._('tr');
+                                          //var rows = $("#features-datatable").dataTable()._('tr');
+                                          var rows = $("#features-datatable").dataTable()._('tr', {"filter": "applied"});
                                           var searchstr = '';
                                           if(extent){
                                             console.log(extent);
@@ -323,7 +326,8 @@ function create_icicle(){
                 }
                 chartI[i].filter(null);
             }
-            var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            scatter_filters['dimension'].dispose();
+            scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
             for (var i = 0;i<chartJ.length; i++){
                 var count = 0;
                 chartJ[i].group(scatter_filters['group'])
@@ -467,7 +471,8 @@ function create_sunburst(){
                 }
                 chartI[i].filter(null);
             }
-            var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+            scatter_filters['dimension'].dispose();
+            scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
             for (var i = 0;i<chartJ.length; i++){
                 var count = 0;
                 chartJ[i].group(scatter_filters['group'])
@@ -542,7 +547,8 @@ function create_sunburst(){
             }
             chartI[i].filter(null);
         }
-        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        scatter_filters['dimension'].dispose();
+        scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
             for (var i = 0;i<chartJ.length; i++){
                 var count = 0;
                 chartJ[i].group(scatter_filters['group'])
@@ -714,7 +720,8 @@ function create_sunburst(){
                 count++;
             }
         }
-        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        scatter_filters['dimension'].dispose();
+        scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
         for (var i = 0;i<chartJ.length; i++){
             chartJ[i].group(scatter_filters['group'])
                 .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
@@ -733,7 +740,8 @@ function create_sunburst(){
         var s = [];
         var r = {};
         var searchstr = "";
-        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        scatter_filters['dimension'].dispose();
+        scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
         global_domain_filter = {};
         var len = rows.length;
         w = (len * 30) + left_margin + 60;
@@ -766,7 +774,8 @@ function create_sunburst(){
             }
             chartI[i].filter(null);
         }
-        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        scatter_filters['dimension'].dispose();
+        scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
         for (var i = 0;i<chartJ.length; i++){
             chartJ[i].group(scatter_filters['group'])
                 .x(d3.scale.linear().domain([0, scatter_filters['xmax']]))
@@ -818,7 +827,8 @@ function create_sunburst(){
             s.push(rows[i][0]);
             global_domain_filter[rows[i][0]] = 1;
         }
-        var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
+        scatter_filters['dimension'].dispose();
+        scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
         for (var i = 0;i<chartJ.length; i++){
             var count = 0;
             chartJ[i].group(scatter_filters['group'])

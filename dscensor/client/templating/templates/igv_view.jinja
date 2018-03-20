@@ -1,6 +1,9 @@
 {% macro igv_load(load_me) %}
     <li class="list-group-item"><a href="http://localhost:60151/load?file={{ load_me['url']|e }}">{{ load_me['filename']|e }}</a></li>
 {% endmacro %}
+{% macro igv_genome(load_me) %}
+    <li class="list-group-item"><a href="http://localhost:60151/load?genome={{ load_me['url']|e }}">{{ load_me['filename']|e }}</a></li>
+{% endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +31,7 @@
         <h4>Fasta Files<h4>
             <ul class="list-group">
             {% for d in data.data['fasta'] -%}
-                {{ igv_load(d) }}    
+                {{ igv_genome(d) }}    
             {% endfor %}
             </ul>
         {% endif %}
