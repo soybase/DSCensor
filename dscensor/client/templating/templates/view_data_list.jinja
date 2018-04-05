@@ -1,19 +1,25 @@
-{% macro igv_load(load_me) %}
+{% macro igv_list(load_me) %}
     <li class="list-group-item">
-        <button><a href="http://localhost:60151/load?file={{ load_me['url']|e }}">Load {{ load_me['filename']|e }}</a></button>
+        <button><a href="http://localhost:60151/load?file={{ load_me['url']|e }}">View {{ load_me['filename']|e }}</a></button>
         <button style='float: right'><a target='_blank' href="{{ load_me['url']|e }}" download id="{{ load_me['filename']|e }}">download</a></button>
     </li>
 {% endmacro %}
-{% macro igv_genome(load_me) %}
+{% macro igv_list_genome(load_me) %}
     <li class="list-group-item">
-        <button><a href="http://localhost:60151/load?genome={{ load_me['url']|e }}">Load {{ load_me['filename']|e }}</a></button>
+        <button><a href="http://localhost:60151/load?genome={{ load_me['url']|e }}">View {{ load_me['filename']|e }}</a></button>
+        <button style='float: right'><a target='_blank' href="{{ load_me['url']|e }}" download id="{{ load_me['filename']|e }}">download</a></button>
+    </li>
+{% endmacro %}
+{% macro gis_list(load_me) %}
+    <li class="list-group-item">
+        <button><a href="http://localhost:60151/load?file={{ load_me['url']|e }}">View {{ load_me['filename']|e }}</a></button>
         <button style='float: right'><a target='_blank' href="{{ load_me['url']|e }}" download id="{{ load_me['filename']|e }}">download</a></button>
     </li>
 {% endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{ data.selection }} IGV Visualization</title>
+    <title>{{ data.type }} Listing</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter2/1.3.14/crossfilter.min.js"></script>
     <script src="http://d3js.org/d3.v3.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.0-beta.31/dc.min.js"></script>
@@ -32,60 +38,24 @@
 <body>
     <div class="container">
     {% if data.data %}
-        <h3>Selection {{ data.selection }}</h3>
-        {% if 'fasta' in data.data %}
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    Fasta Files</h4>
-            </div>
-            <div class="list-group">
-            {% for d in data.data['fasta'] -%}
-                {{ igv_genome(d) }}    
-            {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-        {% if 'gff' in data.data %}
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    GFF Files</h4>
-            </div>
-            <div class="list-group">
-            {% for d in data.data['gff'] -%}
-                {{ igv_load(d) }}
-            {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-        {% if 'vcf' in data.data %}
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    VCF Files</h4>
-            </div>
-            <div class="list-group">
-            {% for d in data.data['vcf'] -%}
-                {{ igv_load(d) }}
-            {% endfor %}
-            </div>
-        </div>
-        {% endif %}
         {% for r in data.data -%}
-            {% if ( r != 'fasta') and ( r != 'gff') and (r != 'vcf') and (r != 'selection') %}
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                        {{ r }} Files</h4>
+                        {{ r|capitalize }} Listing</h4>
                 </div>
                 <div class="list-group">
                 {% for d in data.data[r] -%}
-                    {{ igv_load(d) }}
+                    {% if r == 'fasta' %}
+                        {{ igv_list_genome(d) }}
+                    {% elif r == 'gis' %}
+                        {{ gis_list(d) }}
+                    {% else %}
+                        {{ igv_list(d) }}
+                    {% endif %}
                 {% endfor %}
                 </div>
             </div>
-            {% endif %}
         {% endfor %}
     {% else %}
         <h3>No Results Found</h3>

@@ -9,7 +9,7 @@ import textwrap
 import logging
 import psycopg2
 import psycopg2.extras
-from server.summary_tools import fstools
+#from server.summary_tools import fstools
 from neo4j.v1 import GraphDatabase, basic_auth
 #import simplejson as json
 from jinja2 import Environment, FileSystemLoader
@@ -48,7 +48,7 @@ def format_data(r, header):
     linkout = r.get('linkout_example', False)
     if not linkout:
         linkout = 'N/A'
-        if (label == 'medtr.A17_HM341.v4.0.gff3' or label == 'medtr.A17_HM341.v4.0.genome.fa'): # REMOVE LATER
+        if (label == 'medtr.A17_HM341.v4.0.gff3.gz' or label == 'medtr.A17_HM341.v4.0.genome.fa.gz'): # REMOVE LATER
             linkout = 1
     else:
         linkout = '<button class=popupLinks>{}</button>'.format(linkout)
@@ -184,7 +184,7 @@ def dscensor_neo4j_test(ftype):
                 c += 1
                 value = 'popuptext{}'.format(c)
                 igv = 'http://fisher.ncgr.org:50002/visualize-igv/{}'.format(label)
-                if label == 'medtr.A17_HM341.v4.0.gff3' or label == 'medtr.A17_HM341.v4.0.genome.fa': #remove this when i link actual file objects to nodes
+                if label == 'medtr.A17_HM341.v4.0.gff3.gz' or label == 'medtr.A17_HM341.v4.0.genome.fa.gz': #remove this when i link actual file objects to nodes                   
                     example = 'medtr.Medtr2g020630'#data_obj['linkout_example']
                     linkout = ("<div class='popup'><button value='" + value + 
                                "' class='popupLinkout'>" + example + 
@@ -265,19 +265,19 @@ def dscensor_neo4j_test(ftype):
         name = name.replace("'", '&#39;')
         data['hist_append'] += ('''<label class="checkbox-inline">''' + 
              '''<input type="checkbox" value="''' + value + '"')
-        if value == 'genes' or value == 'scaffolds':
+        if value == 'genes' or value == 'records':
              data['hist_append'] += ''' class="customhistogram-1" checked>''' + name + '''</label>'''
         else:
              data['hist_append'] += ''' class="customhistogram-1">''' + name + '''</label>'''
         data['scat_append_x'] += ('''<label class="checkbox-inline">''' +
              '''<input type="checkbox" value="''' + value + '"')
-        if value == 'exons' or value == 'scaffolds':
+        if value == 'exons' or value == 'records':
              data['scat_append_x'] += ''' class="customscatter-1x" checked>''' + name + '''</label>'''
         else:
              data['scat_append_x'] += ''' class="customscatter-1x">''' + name + '''</label>'''
         data['scat_append_y'] += ('''<label class="checkbox-inline">''' +
              '''<input type="checkbox" value="''' + value + '"')
-        if value == 'genes' or value == 'contigs':
+        if value == 'genes' or value == 'N50':
              data['scat_append_y'] += ''' class="customscatter-1y" checked>''' + name + '''</label>'''
         else:
              data['scat_append_y'] += ''' class="customscatter-1y">''' + name + '''</label>'''
@@ -285,7 +285,7 @@ def dscensor_neo4j_test(ftype):
     data['scat_append_x'] += '''</div>'''
     data['scat_append_y'] += '''</div>'''
     data['scat_append'] = (data['scat_append_x'] + data['scat_append_y'] +
-                           '''<button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div><li class="list-group-item"><span id="customScatter-1"></span></li>''')
+                           '''<div class="container" style="position:relative;left:-50px;padding-bottom:10px"><button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div></div><li class="list-group-item"><span id="customScatter-1"></span></li>''')
 #    print data['scat_append']
 #    print data['hist_append']
         

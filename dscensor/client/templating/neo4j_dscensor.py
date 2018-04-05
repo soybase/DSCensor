@@ -9,7 +9,7 @@ import textwrap
 import logging
 import psycopg2
 import psycopg2.extras
-from server.summary_tools import fstools
+#from server.summary_tools import fstools
 from neo4j.v1 import GraphDatabase, basic_auth
 #import simplejson as json
 from jinja2 import Environment, FileSystemLoader

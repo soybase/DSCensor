@@ -5,9 +5,9 @@ var features_filter = ['genes'];
 var scatx = 'exons';
 var scaty = 'genes';
 if (page_type === 'fasta'){
-    features_filter = ['scaffolds'];
-    scatx = 'scaffolds';
-    scaty = 'contigs';
+    features_filter = ['records'];
+    scatx = 'records';
+    scaty = 'N50';
 }
 var scatter_filters = scatterFilters(feature_counts, global_domain_filter, scatx, scaty);
 $(document).ready(function(){
