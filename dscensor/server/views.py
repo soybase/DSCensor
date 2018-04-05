@@ -1,7 +1,7 @@
 from dscensor import app, session, g, render_template, request
 from flask import render_template_string, make_response, jsonify
 from neo4j_db import neo4j_connection_pool as cpool
-from client.templating import neo4j_dscensor_linkout, igv_template
+from client.templating import neo4j_dscensor_linkout, igv_template, file_listing
 from api import help, derived_from, visualize_paths
 
 logger = app.logger
@@ -58,6 +58,34 @@ def dscensor_neo4j_dynamic_fa():
 #    response = render_template('templating/templates/test_me_linkout.html',
 #                               static_path='/static')
     return response
+
+
+@app.route('/file-listing/<filetype>', methods=['GET'])
+def list_files_by_type(filetype):
+    '''Get all files of type "filetype"'''
+    if request.method == 'GET':
+        data = {'data': {}, 'error': ''}
+        with cpool.get_session() as session:
+            statement = 'MATCH (n:{}) return distinct n'.format(filetype)
+            return_me = []
+            for r in session.run(statement):
+                properties = r[0].properties  # get properties of m
+                filename = properties['name']
+                filetype = properties['filetype']
+                assert filename, 'files should have a name this one doesnt'
+                assert filetype, 'files should have a type this one doesnt'
+                url = properties['url']
+                if not url:  # not an error, but won't return for visual
+                    logger.warning('No url for {} will not return'.format(
+                                                                     filename))
+                    continue
+                if filetype not in data['data']:
+                    data['data'][filetype] = []
+                data['data'][filetype].append({'filename': filename, 
+                                               'url': url})
+                print data
+        response = make_response(render_template_string(file_listing.file_listing(data)))
+        return response
 
 
 @app.route('/visualize-igv/<filename>', methods=['GET'])
