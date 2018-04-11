@@ -10,9 +10,9 @@ import re
 import datetime
 import gzip
 from neo4j.v1 import GraphDatabase, basic_auth
-import summary_tools.FastaMetrics as fmetrics
-import summary_tools.FeatureCounts as fcounts
-from summary_tools.fstools import create_directories, check_file, return_json
+from . import summary_tools.FastaMetrics as fmetrics
+from . import summary_tools.FeatureCounts as fcounts
+from .summary_tools.fstools import create_directories, check_file, return_json
 from glob import glob
 
 parser = argparse.ArgumentParser(description='''
@@ -93,7 +93,7 @@ def connect_neo4j():
 
 def log_me(level, msg, log):
     if not log:
-        print 'No Logger object\n'
+        print('No Logger object\n')
         sys.exit(1)
     stream = getattr(log, level.lower())
     stream(msg)
@@ -187,7 +187,7 @@ def load_config_object(obj, driver):
     with driver.session() as session:
         for r in session.run(statement, obj):
             name = r['a.name']
-            print name
+            print(name)
         if obj['derived_from']:
             for d in obj['derived_from']:
                 params = {'derived_from' : d, 'filename' : obj['filename']}
@@ -198,7 +198,7 @@ def load_config_object(obj, driver):
                              ' MERGE (b)-[r:DERIVED_FROM]->(a)' + 
                              ' RETURN type(r)')
                 for r in session.run(statement):
-                    print r
+                    print(r)
     return True
 
 

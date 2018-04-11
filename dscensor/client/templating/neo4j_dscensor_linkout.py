@@ -301,5 +301,5 @@ def dscensor_neo4j_test(ftype):
 
 if __name__ == '__main__':
     template = dscensor_neo4j_test('fasta')
-    print template
+    print(template)
 

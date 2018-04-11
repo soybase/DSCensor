@@ -9,7 +9,7 @@ import gzip
 import zipfile
 #import bz2
 import logging
-from fstools import check_file, return_filehandle
+from .fstools import check_file, return_filehandle
 
 class FeatureCounts:
 
@@ -55,6 +55,6 @@ class FeatureCounts:
 
 
 if __name__ == '__main__':
-    print 'Class for Counts summary tools.  Please import'
+    print('Class for Counts summary tools.  Please import')
     sys.exit(1)
 

@@ -16,7 +16,7 @@ usage: {}
 
 def check_file(file):
     b = False
-    if not isinstance(file, basestring):
+    if not isinstance(file, str):
         raise ValueError('file must be a string')
     try:
         b = os.path.isfile(file) #get bool
@@ -37,7 +37,7 @@ def remove_file(file):
 
 def check_directory(directory):
     b = False
-    if not isinstance(directory, basestring):
+    if not isinstance(directory, str):
         raise ValueError('directory must be a string')
     try:
         b = os.path.isdir(directory) #get bool
@@ -50,20 +50,20 @@ def check_directory(directory):
 
 
 def create_directory(directory):
-    if not isinstance(directory, basestring):
+    if not isinstance(directory, str):
         raise ValueError('directory must be a string')
     try:
-        os.mkdir(directory, 0755)
+        os.mkdir(directory, 0o755)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
 
 def create_directories(path):
-    if not isinstance(path, basestring):
+    if not isinstance(path, str):
         raise ValueError('path must be a string')
     try:
-        os.makedirs(path, 0755)
+        os.makedirs(path, 0o755)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise

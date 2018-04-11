@@ -1,4 +1,3 @@
-import psycopg2
 from neo4j_db import neo4j_connection_pool as cpool
 from dscensor import app, request
 from flask import jsonify

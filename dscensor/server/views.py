@@ -46,7 +46,7 @@ def list_files_by_type(filetype):
                     data['data'][filetype] = []
                 data['data'][filetype].append({'filename': filename, 
                                                'url': url})
-                print data
+                print(data)
         response = make_response(render_template_string(file_listing.file_listing(data)))
         return response
 
