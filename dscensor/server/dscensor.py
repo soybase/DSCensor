@@ -1,5 +1,5 @@
 ###############################################################################
-#                  Application to run tests for DSCensor                      #
+#                       Application to run DSCensor                           #
 #                      Connor Cameron (ctc@ncgr.org)                          #
 #                      Andrew Farmer  (adf@ncgr.org)                          #
 ###############################################################################
@@ -8,7 +8,6 @@ import os
 import logging
 from logging import Formatter
 from logging.handlers import RotatingFileHandler
-#from client.templating import generate_for_render, aggregate_dscensor_db
 from client.templating import neo4j_dscensor_linkout
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -22,22 +21,11 @@ app = Flask(__name__, template_folder='client')
 app.config.from_object(__name__)
 app.config.update(dict(
     API_PATH='/api/v1',
-##POSTGRES
-#    HOST='localhost',
-#    DATABASE='dscensor_dev',
-#    PORT=5432,
-#    SECRET_KEY='this is some secret',
-#    USERNAME='ctc',
-#    PASSWORD='',
-#    JSONIFY_PRETTYPRINT_REGULAR=False,
-##NEO4j
     HOST = '//0.0.0.0',
     PORT = 7687,
     AUTH = 'neo4j',
     PSWD = 'neo4j'
 ))
-
-
 # WILL FILL HERE FOR INITIAL DATA an api view will be required here to serve it
 
 msg_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -61,12 +49,6 @@ gunicorn_error.addHandler(handler)
 gunicorn_access.addHandler(handler)
 app.logger.addHandler(handler)
 
-# setup large example
-#app.large_example = generate_for_render.render_large_example()
-#app.dscensor_example = aggregate_dscensor_db.dscensor_test()
-#app.neo4j_example = neo4j_dscensor_linkout.dscensor_neo4j_test()
-# imports which expect dscensor.app to exist:
-#from database import postgres_db_connect
 import views
 
 # this exists for gunicorn invocation

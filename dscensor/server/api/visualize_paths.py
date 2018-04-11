@@ -43,4 +43,3 @@ def visualize_paths(filename):
             for r in session.run(statement, {'filename' : fasta}):
                 return_me.append(r[0].properties)  # get dictionary 
         return jsonify(return_me), 200  # maybe 204 if empty... think still 200
-

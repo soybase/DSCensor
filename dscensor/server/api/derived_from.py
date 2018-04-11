@@ -7,8 +7,9 @@ base = app.config['API_PATH']
 logger = app.logger
 
 @app.route(base + '/derived-from-file/', methods=['POST'], 
-                                         defaults={'filename' : False, 'depth' : False})
-@app.route(base + '/derived-from-file/<filename>', methods=['GET'], defaults={'depth' : False})
+           defaults={'filename' : False, 'depth' : False})
+@app.route(base + '/derived-from-file/<filename>', methods=['GET'], 
+           defaults={'depth' : False})
 @app.route(base + '/derived-from-file/<filename>/<depth>', methods=['GET'])
 def derived_from_file(filename, depth):
     '''search specified attributes and labels, custom query as POST'''
@@ -33,6 +34,5 @@ def derived_from_file(filename, depth):
             logger.debug(statement)  #if necessary
             for r in session.run(statement, {'filename' : filename}):
                 logger.info(r[0].properties)  #testing
-                return_me.append(r[0].properties)  #format this later for proper return
+                return_me.append(r[0].properties)  #format this later
         return jsonify(return_me), 200 #maybe 204 if empty... think still 200
-
