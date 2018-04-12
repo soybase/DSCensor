@@ -7,8 +7,6 @@ import json
 import datetime
 import textwrap
 import logging
-import psycopg2
-import psycopg2.extras
 #from server.summary_tools import fstools
 from neo4j.v1 import GraphDatabase, basic_auth
 #import simplejson as json
@@ -303,5 +301,5 @@ def dscensor_neo4j_test(ftype):
 
 if __name__ == '__main__':
     template = dscensor_neo4j_test('fasta')
-    print template
+    print(template)
 

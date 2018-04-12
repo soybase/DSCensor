@@ -10,12 +10,10 @@ import re
 import datetime
 import gzip
 from neo4j.v1 import GraphDatabase, basic_auth
-import summary_tools.FastaMetrics as fmetrics
-import summary_tools.FeatureCounts as fcounts
-from summary_tools.fstools import create_directories, check_file, return_json
+from . import summary_tools.FastaMetrics as fmetrics
+from . import summary_tools.FeatureCounts as fcounts
+from .summary_tools.fstools import create_directories, check_file, return_json
 from glob import glob
-
-#from ongenome import app, session, g
 
 parser = argparse.ArgumentParser(description='''
 
@@ -95,44 +93,20 @@ def connect_neo4j():
 
 def log_me(level, msg, log):
     if not log:
-        print 'No Logger object\n'
+        print('No Logger object\n')
         sys.exit(1)
     stream = getattr(log, level.lower())
     stream(msg)
 
 
-#def fasta_metrics(outpref, fasta):
 def fasta_metrics(fasta):
     logger.info('Generating FASTA metrics for {}...'.format(fasta))
-    #outfile = outpref + '.genomemetrics.json'
-    #if check_file(outfile):
-    #    logger.warning('File {} already exists.  Remove to recreate'.format(
-    #                                                                  outfile))
-    #    return outfile
-    #fmetrics.generate_metrics(fasta)
-    #logger.info('Writing output to {}...'.format(outfile))
-    #fout = open(outfile, 'w')
-    #fout.write(json.dumps(fmetrics.metrics))
-    #fout.close()
-    #return outfile
     fmetrics.generate_metrics(fasta)
     return fmetrics.metrics
 
 
-#def gff_features(outpref, gff):
 def gff_features(gff):
     logger.info('Counting GFF features for {}...'.format(gff))
-    #outfile = outpref + '.gffmetrics.json'
-    #if check_file(outfile):
-    #    logger.warning('File {} already exists.  Remove to recreate'.format(
-    #                                                                  outfile))
-    #    return outfile
-    #fcounts.count_gff_features(gff)
-    #logger.info('Writing output...')
-    #fout = open(outfile, 'w')
-    #fout.write(json.dumps(fcounts.gff_counts))
-    #fout.close()
-    #return outfile
     fcounts.count_gff_features(gff)
     return fcounts.gff_counts
 
@@ -211,10 +185,9 @@ def load_config_object(obj, driver):
         statement += ', {0}:{{{0}}}'.format(f)
     statement += '}) RETURN a.name, labels(a)'
     with driver.session() as session:
-#        with session.begin_transaction() as tx:
         for r in session.run(statement, obj):
             name = r['a.name']
-            print name
+            print(name)
         if obj['derived_from']:
             for d in obj['derived_from']:
                 params = {'derived_from' : d, 'filename' : obj['filename']}
@@ -225,7 +198,7 @@ def load_config_object(obj, driver):
                              ' MERGE (b)-[r:DERIVED_FROM]->(a)' + 
                              ' RETURN type(r)')
                 for r in session.run(statement):
-                    print r
+                    print(r)
     return True
 
 
@@ -245,4 +218,3 @@ if __name__ == '__main__':
     if not load_config_object(config_obj, driver): # load config object
         msg = 'Loading Failed for {}!  See Log\n'.format(args.fileobject)
         log_me('error', msg, logger)
- 
