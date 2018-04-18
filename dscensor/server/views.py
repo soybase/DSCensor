@@ -1,3 +1,4 @@
+import re
 from dscensor import app, session, g, render_template, request
 from flask import render_template_string, make_response, jsonify
 from neo4j_db import neo4j_connection_pool as cpool
@@ -28,11 +29,17 @@ def list_files_by_type(filetype):
     '''Get all files of type "filetype"'''
     if request.method == 'GET':
         data = {'data': {}, 'error': ''}
+        test_me = re.compile('[A-Za-z0-9_:]')
+        check_special = test_me.sub('', filetype)
+        if len(check_special) != 0:
+            return 'BAD REQUEST: Special Characters are not allowed', 400
         with cpool.get_session() as session:
             statement = 'MATCH (n:{}) return distinct n'.format(filetype)
             return_me = []
             for r in session.run(statement):
                 properties = r[0].properties  # get properties of m
+                if not (properties.get('name') and properties.get('filetype')):
+                    return 'No result data for "{}"'.format(filetype), 404
                 filename = properties['name']
                 filetype = properties['filetype']
                 assert filename, 'files should have a name this one doesnt'
