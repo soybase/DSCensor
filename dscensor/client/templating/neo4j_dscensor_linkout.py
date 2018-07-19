@@ -164,10 +164,19 @@ def dscensor_neo4j_test(ftype):
     counts = data['counts']
     driver = connect_neo4j()
     statement = ''
-    if ftype == 'gff':
-        statement = 'match (a:gff) return a'
-    else:
-        statement = 'match (a:fasta) return a'
+    switch = 1
+    print(ftype)
+    for f in ftype.split(':'):
+        print(f)
+        if f == 'gff':
+            switch = 1
+            data['ftype'] = 'gff'
+        elif f == 'fasta':
+            switch = 1
+            data['ftype'] = 'fasta'
+    if not switch:
+        return False
+    statement = 'match (a:{}) return a'.format(ftype)
     c = 0
     with driver.session() as session:
         for r in session.run(statement):

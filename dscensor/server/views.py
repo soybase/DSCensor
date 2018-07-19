@@ -12,15 +12,11 @@ def document_root():
     return render_template('index.html', static_path='/static')
 
 
-@app.route('/DSCensor_neo4j_dynamic')
-def dscensor_neo4j_dynamic():
-    response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test('gff')))
-    return response
-
-
-@app.route('/DSCensor_neo4j_dynamic_fa')
-def dscensor_neo4j_dynamic_fa():
-    response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test('fasta')))
+@app.route('/DSCensor_neo4j_dynamic', methods=['GET'],
+           defaults={'query': 'fasta'})
+@app.route('/DSCensor_neo4j_dynamic/<query>', methods=['GET'])
+def dscensor_neo4j_dynamic(query):
+    response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test(query)))
     return response
 
 
