@@ -12,6 +12,7 @@ from neo4j.v1 import GraphDatabase, basic_auth
 #import simplejson as json
 from jinja2 import Environment, FileSystemLoader
 from shutil import copyfile
+#from dscensor import app
 
 
 msg_format = '%(asctime)s|%(name)s|[%(levelname)s]: %(message)s'
@@ -55,9 +56,9 @@ def format_data(r, header):
              'org_species' : org_species, 'org_cname' : org_cname,
              'url' : url}
     if not (r.get('gene', None) or r.get('N50', None)):
-        logger.error('gene or N50 required to render {}... continuing'.format(
+        logger.warning('gene or N50 required to render {}... continuing'.format(
                                                                         label))
-        return False
+#        return False
     for f in r:
         k = f.lower()
 #        print f  #fill more of these in later
@@ -100,15 +101,29 @@ def format_data(r, header):
         elif k == 'records':
             data['records'] = int(r[f])
             header["Fasta Records"] = 1
+        elif k == 'complete_buscos':
+            data['complete_buscos'] = int(r[f])
+            header["Complete BUSCOs"] = 1
+        elif k == 'fragmented_buscos':
+            data['fragmented_buscos'] = int(r[f])
+            header["Fragmented BUSCOs"] = 1
+        elif k == 'missing_buscos':
+            data['missing_buscos'] = int(r[f])
+            header["Missing BUSCOs"] = 1
     return data
 
 
 def dscensor_neo4j_test(ftype):
     run_dir = os.path.dirname(os.path.realpath(__file__))
+    #domain = app.domain
+    domain = 'http://dev.lis.ncgr.org:50020'  # should import from app
     key_lookup = {'Genes' : 'genes', 'mRNAs' : 'mrnas', 'Exons' : 'exons',
                   'CDS' : 'cds', "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs',
                   'Scaffolds' : 'scaffolds', 'Contigs' : 'contigs',
-                  'N50' : 'N50', 'Bases' : 'allbases', 'Gaps' : 'gaps',
+                  'N50' : 'N50', 'Bases' : 'allbases', 
+                  'Complete BUSCOs': 'complete_buscos', 'Gaps' : 'gaps',
+                  'Frgamented BUSCOs': 'fragmented_buscos', 
+                  'Missing BUSCOs': 'missing_buscos',
                   'Gap Bases' : 'gapbases', 'Fasta Records' : 'records'}
     header_lookup = {'Unique Label' : 'label', 'Origin' : 'origin',
                      'Genus' : 'org_genus', 'Species' : 'org_species',
@@ -118,10 +133,14 @@ def dscensor_neo4j_test(ftype):
                      "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs',
                      'Scaffolds' : 'scaffolds', 'Contigs' : 'contigs',
                      'N50' : 'N50', 'Bases' : 'allbases', 'Gaps' : 'gaps',
-                     'Gap Bases' : 'gapbases', 'Fasta Records' : 'records'}
+                     'Gap Bases' : 'gapbases', 'Fasta Records' : 'records',
+                     'Complete BUSCOs': 'complete_buscos',
+                     'Frgamented BUSCOs': 'fragmented_buscos',
+                     'Missing BUSCOs': 'missing_buscos',}
     header_order = ['Unique Label', 'Origin', 'Genus', 'Species', 
                     'infraspecies', 'Common Name', 'Linkout Example',
                     'Genes', 'mRNAs', 'Exons', 'CDS', "3' UTR", "5' UTR",
+                    'Complete BUSCOs', 'Frgamented BUSCOs', 'Missing BUSCOs',
                     'Fasta Records', 'Contigs', 'Scaffolds', 'N50', 'Bases', 
                     'Gaps', 'Gap Bases']
     header_includes = {'Unique Label' : 1, 'Origin' : 1,
@@ -153,7 +172,7 @@ def dscensor_neo4j_test(ftype):
             'json_header' : '',
             'json_table_data' : '',
             'json_partition_data' : '',
-            'hist_append' : '''<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>Stack:</b>''',
+            'hist_append' : '''<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px;overflow: auto"> <b>Stack:</b>''',
             'scat_append_x' : '''<div class="container" style="position:relative;left:-50px;padding-top:10px;padding-bottom:10px"> <b>XAXIS:</b>''',
             'scat_append_y' : '''<div class="container" style="position:relative;left:-50px;padding-bottom:10px"> <b>YAXIS:</b>''',
             'scat_append' : ''
@@ -168,12 +187,15 @@ def dscensor_neo4j_test(ftype):
     print(ftype)
     for f in ftype.split(':'):
         print(f)
-        if f == 'gff':
+        if f == 'gff' or f == 'gene_models_main':
             switch = 1
             data['ftype'] = 'gff'
-        elif f == 'fasta':
+        elif f == 'fasta' or f == 'genome_main':
             switch = 1
             data['ftype'] = 'fasta'
+        elif f == 'gwas':
+            switch = 1
+            data['ftype'] = 'gwas'
     if not switch:
         return False
     statement = 'match (a:{}) return a'.format(ftype)
@@ -190,7 +212,8 @@ def dscensor_neo4j_test(ftype):
             if data_obj['linkout_example'] != 'N/A':
                 c += 1
                 value = 'popuptext{}'.format(c)
-                igv = 'http://fisher.ncgr.org:50002/visualize-igv/{}'.format(label)
+#                igv = '{}/visualize-igv/{}'.format(domain, label)
+                igv = '/visualize-igv/{}'.format(label)
                 if label == 'medtr.A17_HM341.v4.0.gff3.gz' or label == 'medtr.A17_HM341.v4.0.genome.fa.gz': #remove this when i link actual file objects to nodes                   
                     example = 'medtr.Medtr2g020630'#data_obj['linkout_example']
                     linkout = ("<div class='popup'><button value='" + value + 
@@ -199,7 +222,8 @@ def dscensor_neo4j_test(ftype):
                                "id='" + value + "'>test</span></div>")  
                     data_obj['linkout_example'] = linkout
             if data_obj['url']:
-                igv = 'http://fisher.ncgr.org:50002/visualize-igv/{}'.format(label)
+#                igv = '{}/visualize-igv/{}'.format(domain, label)
+                igv = '/visualize-igv/{}'.format(label)
                 linkout += ("<a target='_blank' href='" + igv  + "'>" + 
                             "<button value='test_igv'>IGV</button></a>")
             if linkout:
@@ -288,11 +312,11 @@ def dscensor_neo4j_test(ftype):
              data['scat_append_y'] += ''' class="customscatter-1y" checked>''' + name + '''</label>'''
         else:
              data['scat_append_y'] += ''' class="customscatter-1y">''' + name + '''</label>'''
-    data['hist_append'] += '''<button id="filterhistogram-1" style="inline:block;position:relative;left:10px" class="customhistogram1">Render</button></div><li class="list-group-item"><span id="customHistogram-1"></span></li>'''
+    data['hist_append'] += '''<button id="filterhistogram-1" style="inline:block;position:relative;left:10px" class="customhistogram1">Render</button></div><li class="list-group-item"><div class=container style="overflow:auto"><span id="customHistogram-1"></span></div></li>'''
     data['scat_append_x'] += '''</div>'''
     data['scat_append_y'] += '''</div>'''
     data['scat_append'] = (data['scat_append_x'] + data['scat_append_y'] +
-                           '''<div class="container" style="position:relative;left:-50px;padding-bottom:10px"><button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div></div><li class="list-group-item"><span id="customScatter-1"></span></li>''')
+                           '''<div class="container" style="position:relative;left:-50px;padding-bottom:10px"><button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div></div><li class="list-group-item"><soan id="customScatter-1"></span></li>''')
 #    print data['scat_append']
 #    print data['hist_append']
         

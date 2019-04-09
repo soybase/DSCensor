@@ -10,9 +10,9 @@ import re
 import datetime
 import gzip
 from neo4j.v1 import GraphDatabase, basic_auth
-from . import summary_tools.FastaMetrics as fmetrics
-from . import summary_tools.FeatureCounts as fcounts
-from .summary_tools.fstools import create_directories, check_file, return_json
+import summary_tools.FastaMetrics as fmetrics
+import summary_tools.FeatureCounts as fcounts
+from summary_tools.fstools import create_directories, check_file, return_json
 from glob import glob
 
 parser = argparse.ArgumentParser(description='''
@@ -159,10 +159,11 @@ def generate_new_config():
 
 def load_config_object(obj, driver):
     msg = 'Adding new file object {}'.format(obj['filename'])
-    statement = ('MERGE (a:{}:{}:{}:{}'.format(obj['filetype'], obj['genus'], 
-                                               obj['species'], obj['origin'])+
+    statement = ('MERGE (a:{}:{}:{}:{}:{}'.format(obj['filetype'], obj['genus'],
+                          obj['species'], obj['origin'], obj['canonical_type'])+
                  ' {name:{filename}, genus:{genus}, species:{species}' + 
-                 ', url:{url}, filetype:{filetype}, origin:{origin}')
+                 ', url:{url}, filetype:{filetype}, origin:{origin}' +
+                 ', canonical_type:{canonical_type}')
 #    if obj.get('counts', None):
 #        statement += ', counts:{path}'
 #        if obj['filetype'] == 'fasta' or obj['filetype'] == 'assembly':
@@ -176,19 +177,22 @@ def load_config_object(obj, driver):
 #                          ', scaffolds:{scaffolds}, N50:{N50}' + 
 #                          ', totalbases:{totalbases}, gapbases{gapbases}}')
 #        elif obj['filetype'] == 'gff' or obj['filetype'] == 'annotation':
-    if obj['infraspecies']:
+    if obj.get('infraspecies', ''):
         statement += ', infraspecies:{infraspecies}'
     for f in obj.get('counts', []):
         if obj['filetype'] == 'fasta' and not f in REPORT_STATS:
             continue
         obj[f] = obj['counts'][f]
         statement += ', {0}:{{{0}}}'.format(f)
+    for f in obj.get('busco', []):
+        obj[f] = obj['busco'][f]
+        statement += ', {0}:{{{0}}}'.format(f)
     statement += '}) RETURN a.name, labels(a)'
     with driver.session() as session:
         for r in session.run(statement, obj):
             name = r['a.name']
             print(name)
-        if obj['derived_from']:
+        if obj.get('derived_from'):
             for d in obj['derived_from']:
                 params = {'derived_from' : d, 'filename' : obj['filename']}
                 statement = ('MATCH (a), (b)' +
@@ -199,6 +203,18 @@ def load_config_object(obj, driver):
                              ' RETURN type(r)')
                 for r in session.run(statement):
                     print(r)
+        if obj.get('child_of'):
+            for c in obj['child_of']:
+                params = {'child_of': c, 'filename': obj['filename']}
+                statement = ('MATCH (a), (b)' +
+                             " WHERE a.name = '{}' and b.name = '{}'".format(
+                                                              c,
+                                                              obj['filename']) +
+                             ' MERGE (b)-[r:CHILD_OF]->(a)' + 
+                             ' RETURN type(r)')
+                for r in session.run(statement):
+                    print(r)
+
     return True
 
 
@@ -213,7 +229,7 @@ if __name__ == '__main__':
     driver = connect_neo4j()
     config_obj = return_json(args.fileobject) # get json object from config
     config_obj['path'] = os.path.abspath(args.fileobject)
-    if not config_obj['counts']:
+    if not config_obj.get('counts', []):
         config_obj['counts'] = [] # set to allow for empty iterator
     if not load_config_object(config_obj, driver): # load config object
         msg = 'Loading Failed for {}!  See Log\n'.format(args.fileobject)

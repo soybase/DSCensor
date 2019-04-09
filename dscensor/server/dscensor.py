@@ -26,6 +26,9 @@ app.config.update(dict(
     AUTH = 'neo4j',
     PSWD = 'neo4j'
 ))
+# server
+app.domain="http://dev.lis.ncgr.org:50020"
+
 # WILL FILL HERE FOR INITIAL DATA an api view will be required here to serve it
 
 msg_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

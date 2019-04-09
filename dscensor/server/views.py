@@ -3,7 +3,7 @@ from dscensor import app, session, g, render_template, request
 from flask import render_template_string, make_response, jsonify
 from neo4j_db import neo4j_connection_pool as cpool
 from client.templating import neo4j_dscensor_linkout, igv_template, file_listing
-from api import help, derived_from, visualize_paths
+from api import help, derived_from, visualize_paths, taxa_list, nodes
 
 logger = app.logger
 
@@ -13,7 +13,7 @@ def document_root():
 
 
 @app.route('/DSCensor_neo4j_dynamic', methods=['GET'],
-           defaults={'query': 'fasta'})
+           defaults={'query': 'genome_main'})
 @app.route('/DSCensor_neo4j_dynamic/<query>', methods=['GET'])
 def dscensor_neo4j_dynamic(query):
     response = make_response(render_template_string(neo4j_dscensor_linkout.dscensor_neo4j_test(query)))
