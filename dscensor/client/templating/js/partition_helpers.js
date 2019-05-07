@@ -22,6 +22,33 @@ function ancestors(node) {
 }
 
 function histogramFilters(c, f){
+        var busco_complete_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.complete_buscos;
+                }
+            } else {
+                return d.complete_buscos;
+            }
+        });
+        var busco_fragmented_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.fragmented_buscos;
+                }
+            } else {
+                return d.fragmented_buscos;
+            }
+        });
+        var busco_missing_group = c.group().reduceSum(function(d){
+            if (Object.keys(f).length > 0){
+                if (f[d.label]){
+                    return d.missing_buscos;
+                }
+            } else {
+                return d.missing_buscos;
+            }
+        });
         var genes_group = c.group().reduceSum(function(d){
             if (Object.keys(f).length > 0){
                 if (f[d.label]){

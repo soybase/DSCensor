@@ -179,12 +179,12 @@ def load_config_object(obj, driver):
 #        elif obj['filetype'] == 'gff' or obj['filetype'] == 'annotation':
     if obj.get('infraspecies', ''):
         statement += ', infraspecies:{infraspecies}'
-    for f in obj.get('counts', []):
+    for f in obj.get('counts', {}):
         if obj['filetype'] == 'fasta' and not f in REPORT_STATS:
             continue
         obj[f] = obj['counts'][f]
         statement += ', {0}:{{{0}}}'.format(f)
-    for f in obj.get('busco', []):
+    for f in obj.get('busco', {}):
         obj[f] = obj['busco'][f]
         statement += ', {0}:{{{0}}}'.format(f)
     statement += '}) RETURN a.name, labels(a)'

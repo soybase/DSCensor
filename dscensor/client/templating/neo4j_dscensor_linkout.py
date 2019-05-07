@@ -319,7 +319,7 @@ def dscensor_neo4j_test(ftype):
                            '''<div class="container" style="position:relative;left:-50px;padding-bottom:10px"><button id="filterscatter-1" style="inline:block;position:relative;left:10px" class="customscatter1">Render</button></div></div><li class="list-group-item"><soan id="customScatter-1"></span></li>''')
 #    print data['scat_append']
 #    print data['hist_append']
-        
+    data['busco_append'] = '''<li class="list-group-item"><div class=container style="overflow:auto"><span id="buscoHistogram-1"></span></div></li>'''
     data['json_data'] = json_data
     data['json_table_data'] = json_table_data
     data['json_partition_data'] = json_partition_data

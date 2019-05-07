@@ -41,6 +41,7 @@ $(document).ready(function(){
     });
     $("#feature_body").append(histogram_selector);
     $("#feature_body").append(scatter_selector);
+    $("#feature_body").append(busco_histogram);
     var customHistogram1 = dc.barChart("#customHistogram-1");
     customHistogram1
         .width(w)
