@@ -1,0 +1,159 @@
+penapi: 3.0.0
+info:
+  title: DSCensor API
+  description: API for node and content retrieval from DSCensor
+  version: 0.1.9
+servers:
+  - url: http://dev.lis.ncgr.org:50020/api/v1
+    description: API route and main website doamin.  Developmental and internally hosted.
+
+components:
+  schemas:
+    Nodes:
+      type: object
+      properties:
+        data:
+          description: An array of node objects
+          type: array
+          items:
+            type: object
+            properties:
+              canonical_type:
+                description: The canonical type from the LEGFED Datastore standard 
+                type: string
+              filetype:
+                description: The file extension (type) of the data file
+                type: string
+              genus:
+                description: The organism genus of the data file 
+                type: string
+              species:
+                description: The organism species of the data file 
+                type: string
+              infraspecies:
+                description: The infraspecific identifier for the data file
+                type: string
+              name:
+                description: The name of the data file 
+                type: string
+              origin: 
+                description: The origin of the datafile, usually where its currently hosted
+                type: string
+              url:
+                description: The URL for the datafile
+                type: string
+              records:
+                description: The number of FASTA records in the data file
+                type: int
+              contigs:
+                description: The number of contigs in the data file seperated by >=10Ns
+                type: int
+              scaffolds:
+                description: The number of scaffolds
+                type: int
+              gapbases:
+                description: The number of bases in gaps
+                type: int
+              gaps:
+                description: The number of gaps >=10Ns
+                type: int
+              N50:
+                description: The N50 of the data file
+                type: int
+              allbases:
+                description: The number of bases in the data file
+                type: int
+              CDS:
+                description: The number of CDS features in the data file
+                type: int
+              exon:
+                description: The number of exon freatures in the data file
+                type: int
+              gene:
+                description: The number of gene features in the data file
+                type: int
+              mRNA:
+                description: The number of mRNA features in the data file
+                type: int
+
+paths:
+  /help:
+    get:
+      summary: Shows all routes for the site and API
+      responses:
+        '200':
+          description: A JSON object of site and API routes
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  routes:
+                    type: array
+                    items:
+                      type: string
+
+  /nodes:
+    get:
+      summary: Returns all nodes currently loaded into DSCensor neo4j
+      responses:
+        '200':
+          description: A JSON object of node objects
+          content:
+            application/json:
+              schema: 
+                $ref/: '#/components/schemas/Nodes'
+
+  /nodes/labels/{query}:
+    get:
+      summary: Returns all nodes matching labels in query
+      description: Query is a colon seperated string of labels, example: medicago:genome_main:current
+      parameters:
+        - in: path
+          name: query
+          required: true
+          type: string
+      responses:
+        '200':
+          description: A JSON object of node objects
+          content:
+            application/json:
+              schema: 
+                $ref/: '#/components/schemas/Nodes'
+
+  /taxa-list:
+    get:
+      summary: Returns all unique genus currently loaded into DSCensor
+      responses:
+        '200':
+          description: JSON object of all unique genus
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+
+  /taxa-list/{genus}:
+    get:
+      summary: Returns all unique species currently loaded into DSCensor for the given genus
+      parameters:
+        - in: path
+          name: genus
+          required: true
+          type: string
+      responses:
+        '200':
+          description: A JSON object of all unique species
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
