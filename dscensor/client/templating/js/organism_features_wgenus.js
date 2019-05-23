@@ -1,4 +1,4 @@
-var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR", 'scaffolds' : 'Scaffolds', 'contigs' : 'Contigs', 'N50' : 'N50', 'allbases' : 'All Bases', 'gaps' : 'Gaps', 'gapbases' : 'Gap Bases', 'records' : 'Fasta Records'};
+var histogramSelection = {'cds' : 'CDS', 'genes' : 'Genes', 'exons' : 'Exons', 'mrnas' : 'mRNAs', 'pps' : 'Polypeptides', 'ppds' : 'Polypeptide Domains', 'chrs' : 'Chromosomes', 'lgs' : 'Linkage Groups', 'gms' : 'Genetic Markers', 'primers' : 'Primers', 'qtls' : 'QTLs', 'con_regs' : 'Consensus Regions', 'syn_regs' : 'Syntenic Regions', '3p_utrs' : "3' UTR", '5p_utrs': "5' UTR", 'scaffolds' : 'Scaffolds', 'contigs' : 'Contigs', 'N50' : 'N50', 'allbases' : 'All Bases', 'gaps' : 'Gaps', 'gapbases' : 'Gap Bases', 'records' : 'Fasta Records', 'complete_buscos': '% Complete BUSCOs', 'missing_buscos': '% Missing BUSCOs'};
 var global_domain_filter = {};
 var sunburst_on = 1;
 var features_filter = ['genes'];
@@ -463,6 +463,7 @@ function create_sunburst(){
                 chartI[i].x(d3.scale.ordinal().domain(s));
                 for (var j=0;j<features_filter.length;j++){
                     var key = features_filter[j];
+                    console.log(key)
                     if (count === 0){
                         chartI[i].group(histogram_filters[key], histogramSelection[key]);
                     } else {

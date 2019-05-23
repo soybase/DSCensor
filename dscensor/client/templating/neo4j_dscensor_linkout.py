@@ -103,13 +103,13 @@ def format_data(r, header):
             header["Fasta Records"] = 1
         elif k == 'complete_buscos':
             data['complete_buscos'] = int(r[f])
-            header["Complete BUSCOs"] = 1
+            header["% Complete BUSCOs"] = 1
         elif k == 'fragmented_buscos':
             data['fragmented_buscos'] = int(r[f])
-            header["Fragmented BUSCOs"] = 1
+            header["% Fragmented BUSCOs"] = 1
         elif k == 'missing_buscos':
             data['missing_buscos'] = int(r[f])
-            header["Missing BUSCOs"] = 1
+            header["% Missing BUSCOs"] = 1
     return data
 
 
@@ -121,9 +121,9 @@ def dscensor_neo4j_test(ftype):
                   'CDS' : 'cds', "3' UTR" : '3p_utrs', "5' UTR" : '5p_utrs',
                   'Scaffolds' : 'scaffolds', 'Contigs' : 'contigs',
                   'N50' : 'N50', 'Bases' : 'allbases', 
-                  'Complete BUSCOs': 'complete_buscos', 'Gaps' : 'gaps',
-                  'Frgamented BUSCOs': 'fragmented_buscos', 
-                  'Missing BUSCOs': 'missing_buscos',
+                  '% Complete BUSCOs': 'complete_buscos', 'Gaps' : 'gaps',
+                  '% Frgamented BUSCOs': 'fragmented_buscos', 
+                  '% Missing BUSCOs': 'missing_buscos',
                   'Gap Bases' : 'gapbases', 'Fasta Records' : 'records'}
     header_lookup = {'Unique Label' : 'label', 'Origin' : 'origin',
                      'Genus' : 'org_genus', 'Species' : 'org_species',
@@ -134,13 +134,13 @@ def dscensor_neo4j_test(ftype):
                      'Scaffolds' : 'scaffolds', 'Contigs' : 'contigs',
                      'N50' : 'N50', 'Bases' : 'allbases', 'Gaps' : 'gaps',
                      'Gap Bases' : 'gapbases', 'Fasta Records' : 'records',
-                     'Complete BUSCOs': 'complete_buscos',
-                     'Frgamented BUSCOs': 'fragmented_buscos',
-                     'Missing BUSCOs': 'missing_buscos',}
+                     '% Complete BUSCOs': 'complete_buscos',
+                     '% Frgamented BUSCOs': 'fragmented_buscos',
+                     '% Missing BUSCOs': 'missing_buscos',}
     header_order = ['Unique Label', 'Origin', 'Genus', 'Species', 
                     'infraspecies', 'Common Name', 'Linkout Example',
                     'Genes', 'mRNAs', 'Exons', 'CDS', "3' UTR", "5' UTR",
-                    'Complete BUSCOs', 'Frgamented BUSCOs', 'Missing BUSCOs',
+                    '% Complete BUSCOs', '% Frgamented BUSCOs', '% Missing BUSCOs',
                     'Fasta Records', 'Contigs', 'Scaffolds', 'N50', 'Bases', 
                     'Gaps', 'Gap Bases']
     header_includes = {'Unique Label' : 1, 'Origin' : 1,

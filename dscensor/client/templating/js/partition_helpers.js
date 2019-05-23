@@ -219,7 +219,9 @@ function histogramFilters(c, f){
                            'allbases' : allbases_group,
                            'gaps' : gaps_group,
                            'records' : records_group,
-                           'gapbases' : gapbases_group};
+                           'gapbases' : gapbases_group,
+                           'complete_buscos': busco_complete_group,
+                           'missing_buscos': busco_missing_group};
         return filters;
 }
 
