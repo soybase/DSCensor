@@ -1,15 +1,25 @@
 import re
+from datetime import datetime
+from subprocess import check_call
 from dscensor import app, session, g, render_template, request
-from flask import render_template_string, make_response, jsonify
+from flask import render_template_string, make_response, jsonify, send_file
 from neo4j_db import neo4j_connection_pool as cpool
 from client.templating import neo4j_dscensor_linkout, igv_template, file_listing
-from api import help, derived_from, visualize_paths, taxa_list, nodes
+from api import help, derived_from, visualize_paths, taxa_list, nodes, pangenes
 
 logger = app.logger
 
 @app.route('/')
 def document_root():
     return render_template('index.html', static_path='/static')
+
+
+@app.route('/multiqc-demo')
+def multiqc_test():
+    my_file = str(datetime.utcnow().timestamp())
+    multiqc_cmd = f'multiqc -m busco /tmp/ -n {my_file} -c /home/ccameron/apps/DSCensor_py3/DSCensor/dscensor/client/multiqc_config.yaml -o /home/ccameron/apps/DSCensor_py3/DSCensor/dscensor/client/multiqc_results'
+    check_call(multiqc_cmd, shell=True)
+    return send_file(f'./client/multiqc_results/{my_file}.html')
 
 
 @app.route('/DSCensor_neo4j_dynamic', methods=['GET'],

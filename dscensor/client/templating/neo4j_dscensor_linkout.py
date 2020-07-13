@@ -26,10 +26,14 @@ logger = logging.getLogger('DSCensor_test')
 logger.addHandler(log_handler)
 
 def connect_neo4j():
-    host = '//0.0.0.0'
+#    host = '//0.0.0.0'
+#    port = 7687
+#    auth = 'neo4j'
+#    pswd = 'neo4j'
+    host = '//wright'
     port = 7687
-    auth = 'neo4j'
-    pswd = 'neo4j'
+    auth = 'censor'
+    pswd = 'CensorMe123'
     bolt = 'bolt:{}:{}'.format(host, port)
     driver = GraphDatabase.driver(bolt, auth=basic_auth(auth, pswd))
     logger.info('connection succeeded, driver:{}'.format(driver))

@@ -11,6 +11,7 @@ driver = False
 #    '''connects a driver (which serves as a connection pool)
 #       https://neo4j.com/docs/api/python-driver/current/driver.html'''
 bolt = 'bolt:{}:{}'.format(app.config['HOST'], app.config['PORT'])
+print(bolt)
 driver = GraphDatabase.driver(bolt,
                               auth=basic_auth(app.config['AUTH'], 
                                               app.config['PSWD']))

@@ -8,6 +8,7 @@ import os
 import logging
 from logging import Formatter
 from logging.handlers import RotatingFileHandler
+from panparser import panparser_prototype
 from client.templating import neo4j_dscensor_linkout
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -21,14 +22,17 @@ app = Flask(__name__, template_folder='client')
 app.config.from_object(__name__)
 app.config.update(dict(
     API_PATH='/api/v1',
-    HOST = '//0.0.0.0',
+#    HOST = '//0.0.0.0',
+    HOST = '//wright',
     PORT = 7687,
-    AUTH = 'neo4j',
-    PSWD = 'neo4j'
+    AUTH = 'censor',
+    PSWD = 'CensorMe123'
+#    AUTH = 'neo4j',
+#    PSWD = 'neo4j'
 ))
 # server
 app.domain="http://dev.lis.ncgr.org:50020"
-
+app.panparser = panparser_prototype.main()  # get pan parser datastructures in memory
 # WILL FILL HERE FOR INITIAL DATA an api view will be required here to serve it
 
 msg_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

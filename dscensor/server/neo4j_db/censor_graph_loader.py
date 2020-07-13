@@ -24,6 +24,8 @@ parser = argparse.ArgumentParser(description='''
 parser.add_argument('--fileobject', metavar = '<object.json>',
 help='''Object to load.  JSON Format required!\n\n
 Populate config files using --new_config\n\n''')
+parser.add_argument('--production', action='store_true',
+help='''Swaps driver to a wright facing connection.''')
 parser.add_argument('--fofn', metavar = '<objects.txt>',
 help='''File of object files to load.  Please provide full paths\n\n''')
 parser.add_argument('--new_config', action='store_true',
@@ -35,7 +37,9 @@ help='''File to generate counts data for.''')
 parser.add_argument('--filename',
 help='''Name of file object.''')
 parser.add_argument('--filetype',
-help='''Type of file object.''')
+help='''File type of file object.''')
+parser.add_argument('--canonical_type',
+help='''Canonical type of file object.''')
 parser.add_argument('--url',
 help='''URL of file object.''')
 parser.add_argument('--genus',
@@ -91,6 +95,18 @@ def connect_neo4j():
     return driver
 
 
+def connect_neo4j_wright():
+    '''Connection object for wright to upload production data after testing'''
+    host = '//wright'
+    port = 7687
+    auth = 'censor'
+    pswd = 'CensorMe123'
+    bolt = 'bolt:{}:{}'.format(host, port)
+    driver = GraphDatabase.driver(bolt, auth=basic_auth(auth, pswd))
+    logger.info('connection succeeded, driver:{}'.format(driver))
+    return driver
+
+
 def log_me(level, msg, log):
     if not log:
         print('No Logger object\n')
@@ -113,13 +129,14 @@ def gff_features(gff):
 
 def generate_new_config():
     if (not (args.filename and args.filetype and args.url
-                           and args.genus and args.species)): # Required
-        msg = ('--filename, --filetype, --genus, --species and --url ' +
+                           and args.genus and args.species and args.canonical_type)): # Required
+        msg = ('--filename, --filetype, --genus, --species, --canonical_type and --url ' +
                'required for new config object')
         log_me('error', msg, logger)
         sys.exit(1)
     fname = args.filename
     ftype = args.filetype.lower() # set lower for ez standard
+    canonical_type = args.canonical_type
     genus = args.genus.lower()
     species = args.species.lower()
     infraspecies = args.infraspecies
@@ -140,17 +157,23 @@ def generate_new_config():
         elif ftype == 'fasta' or ftype == 'fa' or ftype == 'fna':
             ftype = 'fasta'
             new_config['counts'] = fasta_metrics(f_in) # get counts fasta
+        elif ftype == 'mrk':
+            ftype = 'mrk'
+            new_config['counts'] = gff_features(f_in) # get counts for markers
+        
     object_out = './{}_node.json'.format(fname)
     msg = 'creating new config {}'.format(object_out)
     log_me('info', msg, logger)
     new_config['filename'] = fname  # populate object
     new_config['filetype'] = ftype
+    new_config['canonical_type'] = canonical_type
     new_config['url'] = url
     new_config['genus'] = genus
     new_config['species'] = species
     new_config['infraspecies'] = infraspecies
     new_config['origin'] = origin
     new_config['derived_from'] = der_from
+    new_config['child_of'] = der_from
     fout = open(object_out, 'w')
     fout.write(json.dumps(new_config)) # write object
     msg = 'Finished.  Run --object or --fofn to load.'
@@ -226,7 +249,11 @@ if __name__ == '__main__':
     if args.new_config:
        generate_new_config() # generate new config object, see method
        sys.exit(0)
-    driver = connect_neo4j()
+    driver = False
+    if args.production:
+        driver = connect_neo4j_wright()
+    else:
+        driver = connect_neo4j()
     config_obj = return_json(args.fileobject) # get json object from config
     config_obj['path'] = os.path.abspath(args.fileobject)
     if not config_obj.get('counts', []):
