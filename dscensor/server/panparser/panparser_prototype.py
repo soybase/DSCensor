@@ -33,8 +33,14 @@ def parse_pansets(dataset):
             (panset, transcript) = line.split('\t')
             gene = clean_ids(transcript)
             short_name = un_yukify(gene)
-            genes[gene] = panset
-            genes[short_name] = panset
+            if not gene in genes:
+                genes[gene] = []
+            if not short_name in genes:
+                genes[short_name] = []
+            if panset not in genes[gene]:
+                genes[gene].append(panset)
+            if panset not in genes[short_name]:
+                genes[short_name].append(panset)
     return genes
 
 
