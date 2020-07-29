@@ -33,6 +33,7 @@ app.config.update(dict(
 # server
 app.domain="http://dev.lis.ncgr.org:50020"
 app.panparser = panparser_prototype.main()  # get pan parser datastructures in memory
+app.main_panset = 'glysp.mixed.pan2.TV81'  # glycine main panset
 # WILL FILL HERE FOR INITIAL DATA an api view will be required here to serve it
 
 msg_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

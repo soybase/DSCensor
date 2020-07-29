@@ -11,6 +11,17 @@ def clean_ids(my_id):
     return new_id
 
 
+def un_yukify(my_id):
+    '''Removes upstream DS information from fully qualified gene names
+
+       ex: glyma.Wm82.gnm1.ann1.Glyma16g30815
+
+       becomes: Glyma16g30815
+    '''
+    new_id = '.'.join(my_id.split('.')[4:])
+    return new_id
+
+
 def parse_pansets(dataset):
     '''Parses hsh.tsv file for gene assignment'''
     genes = {}
@@ -21,7 +32,9 @@ def parse_pansets(dataset):
                 continue
             (panset, transcript) = line.split('\t')
             gene = clean_ids(transcript)
+            short_name = un_yukify(gene)
             genes[gene] = panset
+            genes[short_name] = panset
     return genes
 
 
@@ -39,15 +52,18 @@ def parse_clusters(dataset):
 
 
 def main():
-    '''Main runtime for import'''
+    '''Main runtime for import
+
+       Needs to be expanded to db access to scale
+    '''
     my_datasets = ['glysp.mixed.pan2.TV81']
     dataset_dir = './panparser'
     datasets = {}
     for d in my_datasets:
         my_hsh = f'{os.path.abspath(dataset_dir)}/{d}.hsh.tsv'
         my_clust = f'{os.path.abspath(dataset_dir)}/{d}.clust.tsv'
-        pansets = parse_pansets(my_hsh)
-        clusters = parse_clusters(my_clust)
+        pansets = parse_pansets(my_hsh)  # get pansets from files
+        clusters = parse_clusters(my_clust)  # get clusters from files
         datasets[d] = {'pansets': pansets, 'clusters': clusters}
     return datasets
 
