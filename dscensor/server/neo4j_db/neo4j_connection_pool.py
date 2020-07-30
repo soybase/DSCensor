@@ -1,6 +1,5 @@
 import os, sys
 import logging
-import simplejson as json
 from contextlib import contextmanager
 from neo4j.v1 import GraphDatabase, basic_auth
 from dscensor import app, session, g
