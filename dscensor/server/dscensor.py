@@ -22,13 +22,10 @@ app = Flask(__name__, template_folder='client')
 app.config.from_object(__name__)
 app.config.update(dict(
     API_PATH='/api/v1',
-#    HOST = '//0.0.0.0',
-    HOST = '//wright',
-    PORT = 7687,
-    AUTH = 'censor',
-    PSWD = 'CensorMe123'
-#    AUTH = 'neo4j',
-#    PSWD = 'neo4j'
+    HOST = os.environ['HOST'],
+    PORT = os.environ['PORT'],
+    AUTH = os.environ['AUTH'],
+    PSWD = os.environ['PSWD']
 ))
 # server
 app.domain="http://dev.lis.ncgr.org:50020"
