@@ -9,7 +9,6 @@ import logging
 from logging import Formatter
 from logging import StreamHandler
 from panparser import panparser_prototype
-from client.templating import neo4j_dscensor_linkout
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 

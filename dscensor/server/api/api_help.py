@@ -7,7 +7,7 @@ app.logger.info(
 )
 
 @app.route(r)
-def help():
+def api_help():
     '''list all routes'''
     endpoints = sorted(
                       [rule.rule for rule in app.url_map.iter_rules() 
