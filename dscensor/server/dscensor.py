@@ -50,7 +50,7 @@ gunicorn_error.addHandler(handler)
 gunicorn_access.addHandler(handler)
 app.logger.addHandler(handler)
 
-import views
+from views import *
 
 # this exists for gunicorn invocation
 if __name__ == '__main__':
