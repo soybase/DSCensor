@@ -7,7 +7,7 @@
 import os
 import logging
 from logging import Formatter
-from logging.handlers import RotatingFileHandler
+from logging import StreamHandler
 from panparser import panparser_prototype
 from client.templating import neo4j_dscensor_linkout
 from flask import Flask, request, session, g, redirect, url_for, abort, \
@@ -38,11 +38,7 @@ app.main_panset = 'glysp.mixed.pan2.TV81'  # glycine main panset
 
 msg_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 formatter = Formatter(msg_format)
-handler = RotatingFileHandler(
-    LOGFILE,
-    maxBytes=MAXLOGBYTES,
-    backupCount=MAXLOGFILES
-)
+handler = StreamHandler()
 handler.setFormatter(formatter)
 
 if app.debug:
