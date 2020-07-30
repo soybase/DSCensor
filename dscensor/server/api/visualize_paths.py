@@ -4,6 +4,8 @@ from flask import jsonify
 
 base = app.config['API_PATH']
 logger = app.logger
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+
 
 @app.route(base + '/visualize-paths/<filename>', methods=['GET'])
 def visualize_paths(filename):

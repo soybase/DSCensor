@@ -6,6 +6,8 @@ app.logger.info(
     'note: http {} for list of defined routes'.format(r)
 )
 
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
 @app.route(r)
 def api_help():
     '''list all routes'''

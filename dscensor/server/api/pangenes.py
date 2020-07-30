@@ -5,6 +5,7 @@ base = app.config['API_PATH']
 logger = app.logger
 panparser = app.panparser
 main_panset = app.main_panset
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 
 @app.route(base + '/pansets', methods=['GET'])

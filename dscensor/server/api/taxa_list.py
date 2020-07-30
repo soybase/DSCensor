@@ -4,6 +4,8 @@ from flask import jsonify
 
 base = app.config['API_PATH']
 logger = app.logger
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+
 
 @app.route(base + '/taxa-list/', methods=['GET'], 
            defaults={'genus' : False})

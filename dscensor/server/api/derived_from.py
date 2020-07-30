@@ -4,6 +4,7 @@ from flask import jsonify
 
 base = app.config['API_PATH']
 logger = app.logger
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 @app.route(base + '/derived-from-file/', methods=['POST'], 
            defaults={'filename' : False, 'depth' : False})
