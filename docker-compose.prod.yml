@@ -1,22 +1,17 @@
 version: '2.3'
 
 services:
-  flask:
+  gunicorn:
     build:
       context: .
-      target: dev
+      target: prod
     environment:
-      FLASK_APP: dscensor
-      FLASK_ENV: development
       NEO4J_HOST: '//neo4j'
       NEO4J_PORT: 7687
       NEO4J_AUTH: ''
       NEO4J_PSWD: ''
-    command: flask run --host=0.0.0.0
     ports:
-      - "5000:5000"
-    volumes:
-      - ./dscensor/server:/app:ro
+      - "8000:8000"
 
   neo4j:
     image: neo4j:3.5

@@ -4,14 +4,18 @@
 #
 #    pip-compile requirements.in
 #
-click==6.7                # via flask
+click==7.1.2              # via flask
 flask==1.1.2              # via -r requirements.in
-itsdangerous==0.24        # via flask
-jinja2==2.10.1            # via flask
+gunicorn==20.0.4          # via -r requirements.in
+itsdangerous==1.1.0       # via flask
+jinja2==2.11.2            # via flask
 markupsafe==1.1.1         # via jinja2
 neo4j-driver==1.7.6       # via -r requirements.in
 neobolt==1.7.17           # via neo4j-driver
 neotime==1.7.4            # via neo4j-driver
 pytz==2020.1              # via neotime
-six==1.11.0               # via neotime
+six==1.15.0               # via neotime
 werkzeug==1.0.1           # via flask
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
