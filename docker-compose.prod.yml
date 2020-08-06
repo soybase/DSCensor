@@ -13,12 +13,14 @@ services:
     depends_on:
       neo4j:
         condition: service_healthy
-    ports:
-      - "8000:8000"
+    restart: always
+#   ports:
+#     - "8000:8000"
 
   neo4j:
     image: neo4j:3.5
     healthcheck:
       test: perl -MIO::Socket::INET -e 'exit(! defined( IO::Socket::INET->new("localhost:7687")))'
+    restart: always
     environment:
       NEO4J_AUTH: none

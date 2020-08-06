@@ -1,0 +1,41 @@
+# Deployment Notes
+########################################
+# Dependencies:
+# 1. traefik container is running
+#
+# Deployment:
+# 1. (Recommended) Give the Docker Compose app a more descriptive project name
+#    by setting the following environment variable, or create a .env file in
+#    the current directory:
+#     
+#    COMPOSE_PROJECT_NAME=soybase-api-v1-panclusters
+#
+# 2. Start the service:
+#
+#    docker-compose -f docker-compose.prod.yml -f docker-compose.soybase.yml up -d --build
+ 
+version: '2.3'
+
+services:
+  gunicorn:
+    build:
+      context: .
+      target: soybase
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.soybase.rule=Host(`soybase.org`, `www.soybase.org`, `soybase-stage.usda.iastate.edu`) && PathPrefix(`/api/v1/panclusters`)"
+    networks:
+      - traefik
+      - neo4j
+
+  neo4j:
+    networks:
+      - neo4j
+
+networks:
+  traefik:
+    external:
+      name: traefik
+
+  neo4j:
+    internal: true
